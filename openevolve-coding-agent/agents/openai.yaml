@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenEvolve Coding Agent"
+  short_description: "Run and repair OpenEvolve projects"
+  default_prompt: "Use $openevolve-coding-agent to validate this OpenEvolve project, run it, and summarize the best metrics."
