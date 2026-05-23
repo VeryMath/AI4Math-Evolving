@@ -9,7 +9,7 @@ AI4Math-Evolving/                    # browser UI and deterministic backend
 AI4Math-Evolving-Skill/              # canonical agent workflow and runner scripts
 ```
 
-The UI backend handles predictable web work: upload, auth, run state, SSE, file browsing, downloads, and result analysis. Evolution orchestration is delegated through the sibling `AI4Math-Evolving-Skill` runner, which constructs the `opencode run --agent openevolve-unified-primary` command that drives OpenEvolve.
+The UI backend handles predictable web work: upload, auth, run state, SSE, file browsing, downloads, and result analysis. Evolution orchestration is delegated through the sibling `AI4Math-Evolving-Skill` interactive runner, which keeps project/run state in `.openevolve-agent/session.json` and starts OpenEvolve in direct mode by default.
 
 ## Architecture
 
@@ -18,7 +18,7 @@ Browser UI
   -> Python stdlib backend
   -> backend/skill_runner.py
   -> AI4Math-Evolving-Skill
-  -> opencode / coding agent
+  -> interactive session CLI
   -> OpenEvolve
 ```
 
@@ -28,10 +28,11 @@ This keeps the backend thin without asking a coding agent to serve HTTP, manage 
 
 - Node.js 20
 - Python 3.10+
-- `opencode` CLI configured locally
-- OpenEvolve available to the coding-agent runtime
+- OpenEvolve available as `openevolve-run`
 - A provider API key in `.env` or your shell
 - The sibling `AI4Math-Evolving-Skill` repository, or `OPENEVOLVE_SKILL_REPO` pointing to it
+
+`opencode` is optional for the advanced `runMode=opencode` path.
 
 ## Quick Start
 
@@ -61,6 +62,9 @@ DEEPSEEK_MODEL=
 
 # Optional when the skill repo is not a sibling of this repo.
 OPENEVOLVE_SKILL_REPO=
+
+# Optional: direct is the default. Set opencode to use an opencode agent.
+AI4MATH_EVOLVE_RUN_MODE=direct
 ```
 
 Start backend and frontend:

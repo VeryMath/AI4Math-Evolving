@@ -4,9 +4,9 @@
 
 - Node.js 20
 - Python 3.10+
-- opencode CLI configured locally
-- OpenEvolve installed and importable in the runtime used by opencode
+- OpenEvolve installed with `openevolve-run` available on `PATH`
 - A provider API key exposed through environment variables
+- Optional: opencode CLI configured locally for `AI4MATH_EVOLVE_RUN_MODE=opencode`
 
 ## Install Frontend Dependencies
 

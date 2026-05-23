@@ -87,12 +87,24 @@ except Exception:
         pass
 
 try:
-    from skill_runner import SkillRunnerError, build_run_command
+    from skill_runner import (
+        SkillRunnerError,
+        build_run_command,
+        provider_extras_from_env,
+        record_external_run,
+    )
 except ImportError:
     try:
-        from backend.skill_runner import SkillRunnerError, build_run_command
+        from backend.skill_runner import (
+            SkillRunnerError,
+            build_run_command,
+            provider_extras_from_env,
+            record_external_run,
+        )
     except ImportError:
         build_run_command = None
+        provider_extras_from_env = None
+        record_external_run = None
 
         class SkillRunnerError(Exception):
             pass
@@ -3595,40 +3607,55 @@ class Handler(BaseHTTPRequestHandler):
             logs_dir.mkdir(parents=True, exist_ok=True)
             monitor_log_path = logs_dir / "monitor_realtime.jsonl"
 
-            # 通过 skill runner 构造 opencode 调用；后端只保留 Web/API 与进程管理职责。
+            # 通过交互式 skill runner 构造 OpenEvolve 调用；后端只保留 Web/API 与进程管理职责。
             opencode_agent = os.environ.get(
                 "OPENCODE_EVOLVE_AGENT", "openevolve-unified-primary"
             ).strip() or "openevolve-unified-primary"
+            run_mode = str(
+                data.get("runMode")
+                or os.environ.get("AI4MATH_EVOLVE_RUN_MODE")
+                or os.environ.get("EVOLVE_RUN_MODE")
+                or "direct"
+            ).strip().lower()
+            if run_mode not in {"direct", "opencode"}:
+                run_mode = "direct"
             if build_run_command is None:
                 return _json_response(
                     self,
                     HTTPStatus.BAD_GATEWAY,
                     {"error": "OpenEvolve skill runner adapter is unavailable"},
                 )
+            runner_extras = provider_extras_from_env() if provider_extras_from_env else {}
+            runner_extras.update(
+                {
+                    "num_islands": num_islands,
+                    "population_size": population_size,
+                    "evaluator_timeout": evaluator_timeout,
+                    "parallel_evaluations": parallel_evaluations,
+                    "mutation_rate": mutation_rate,
+                    "diff_based_evolution": diff_based_evolution,
+                    "archive_size": archive_size,
+                    "elite_selection_ratio": elite_selection_ratio,
+                    "exploitation_ratio": exploitation_ratio,
+                    "similarity_threshold": similarity_threshold,
+                }
+            )
             try:
                 cmd = build_run_command(
                     project_dir,
                     iterations=iterations,
                     checkpoint_interval=checkpoint_interval,
                     output_dir=output_dir,
+                    mode=run_mode,
+                    workspace=project_dir,
+                    project_name=project_name,
                     agent=opencode_agent,
                     language="zh-CN",
-                    extras={
-                        "num_islands": num_islands,
-                        "population_size": population_size,
-                        "evaluator_timeout": evaluator_timeout,
-                        "parallel_evaluations": parallel_evaluations,
-                        "mutation_rate": mutation_rate,
-                        "diff_based_evolution": diff_based_evolution,
-                        "archive_size": archive_size,
-                        "elite_selection_ratio": elite_selection_ratio,
-                        "exploitation_ratio": exploitation_ratio,
-                        "similarity_threshold": similarity_threshold,
-                    },
+                    extras=runner_extras,
                 )
             except SkillRunnerError as e:
                 return _json_response(self, HTTPStatus.BAD_GATEWAY, {"error": str(e)})
-            print(f"[DEBUG] Starting opencode: {' '.join(cmd)}", file=sys.stderr)
+            print(f"[DEBUG] Starting evolution ({run_mode}): {' '.join(cmd)}", file=sys.stderr)
             print(f"[DEBUG] Working dir: {project_dir}", file=sys.stderr)
 
             proc = subprocess.Popen(
@@ -3641,6 +3668,21 @@ class Handler(BaseHTTPRequestHandler):
                 text=True,
             )
             print(f"[DEBUG] Process started with PID: {proc.pid}", file=sys.stderr)
+            if record_external_run is not None:
+                try:
+                    record_external_run(
+                        project_dir,
+                        run_id=run_id,
+                        output_dir=output_dir,
+                        log_path=monitor_log_path,
+                        pid=proc.pid,
+                        mode=run_mode,
+                        command=cmd,
+                        workspace=project_dir,
+                        project_name=project_name,
+                    )
+                except SkillRunnerError as e:
+                    print(f"[DEBUG] failed to record interactive session run: {e}", file=sys.stderr)
 
             runsrv: dict[str, Any] = {
                 "proc": proc,
@@ -3659,6 +3701,7 @@ class Handler(BaseHTTPRequestHandler):
                 "elite_selection_ratio": elite_selection_ratio,
                 "exploitation_ratio": exploitation_ratio,
                 "similarity_threshold": similarity_threshold,
+                "runner_mode": run_mode,
                 "subs": [],
                 "lock": threading.Lock(),
                 "monitor_log_path": monitor_log_path,
@@ -3689,6 +3732,7 @@ class Handler(BaseHTTPRequestHandler):
                     "eliteSelectionRatio": elite_selection_ratio,
                     "exploitationRatio": exploitation_ratio,
                     "similarityThreshold": similarity_threshold,
+                    "runMode": run_mode,
                     "channel": "system_log",
                     "origin": "backend",
                     "confidence": "high",
@@ -3712,6 +3756,7 @@ class Handler(BaseHTTPRequestHandler):
                     "eliteSelectionRatioApplied": elite_selection_ratio,
                     "exploitationRatioApplied": exploitation_ratio,
                     "similarityThresholdApplied": similarity_threshold,
+                    "runMode": run_mode,
                 },
             )
         except Exception as e:

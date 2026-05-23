@@ -6,11 +6,11 @@ This note records the current AI4Math-Evolving verification result and the targe
 
 ## Summary
 
-The public UI repo can be installed, built, started, and smoke-tested locally. The backend API, frontend dev server, project upload, file tree API, and the backend-to-skill-runner launch path are working.
+The public UI repo can be installed, built, started, and smoke-tested locally. The backend API, frontend dev server, project upload, file tree API, and the backend-to-interactive-skill-runner launch path are working.
 
 The OpenEvolve core path is also working when launched directly with `openevolve-run` and the local provider environment.
 
-The remaining blocker for a full UI-triggered evolution run is the `opencode` agent layer: the UI currently asks `opencode` to run agent `openevolve-unified-primary`, but that agent is not registered in the local public setup. Because of that, the UI `START` endpoint creates a run and starts `opencode`, but no `best_program.py` or best metrics are produced through that route yet.
+The UI `START` endpoint now uses the skill's interactive session runner and direct `openevolve-run` mode by default. The older `opencode` agent path remains available as an advanced mode, but it is no longer the minimum runnable path.
 
 ## Verified Components
 
@@ -37,9 +37,10 @@ Notes:
 
 Passed:
 
-- Python unit tests in the public UI repo: `5` tests passed.
+- Python unit tests in the public UI repo: `8` tests passed.
 - Backend syntax check for `backend/server.py`, `backend/llm_client.py`, and `backend/skill_runner.py`.
 - Skill repo unit tests: `6` tests passed.
+- Skill repo interactive unit tests: `12` tests passed after the interactive CLI update.
 - Skill quick validation passed.
 - Frontend install and production build passed.
 - Backend HTTP smoke passed at `http://127.0.0.1:8001/api/projects`.
@@ -48,16 +49,17 @@ Passed:
 - Project tree API passed through `GET /api/projects/<name>/tree`.
 - Direct `openevolve-run` completed a one-iteration function-minimization run.
 - Skill summarizer found the direct run's best program and metrics.
+- UI `POST /api/runs/start` smoke passed with a fake `openevolve-run`, proving the backend now generates a direct interactive-session command, writes `.openevolve-agent/session.json`, records `currentRun`, streams logs, refreshes status, and emits `done`.
 
 Warnings:
 
 - `npm ci` reported `4` audit findings: `2` moderate and `2` high.
 - `npm run build` emitted a Vite chunk-size warning for the main bundle.
 
-Blocked:
+Current UI START behavior:
 
-- UI `POST /api/runs/start` launches `opencode` through the skill runner, but the configured `opencode` agent `openevolve-unified-primary` is missing locally.
-- The UI-triggered route therefore starts a run directory and monitor log, but does not yet produce final OpenEvolve best artifacts.
+- UI `POST /api/runs/start` launches through the interactive skill runner in direct mode by default.
+- The direct UI route creates `.openevolve-agent/session.json`, a run directory, and monitor logs without requiring a custom opencode agent.
 
 ## Direct OpenEvolve Smoke Result
 
@@ -72,23 +74,22 @@ reliability_score: 1.0
 combined_score: 0.9330
 ```
 
-This confirms that the provider configuration and OpenEvolve runtime can work locally. The unresolved part is not the model endpoint itself; it is the `opencode` custom-agent bridge used by the UI `START` button.
+This confirms that the provider configuration and OpenEvolve runtime can work locally.
 
 ## Current Skill Effect
 
-The current `openevolve-coding-agent` skill is an MVP with deterministic helper scripts:
+The current `openevolve-coding-agent` skill has a stateful interactive CLI plus deterministic helper scripts:
 
+- `interactive_session.py`: manages `.openevolve-agent/session.json` and supports `init`, `import`, `select`, `validate`, `configure`, `run`, `status`, `tail`, `stop`, `tree`, `read`, `summarize`, and `next`.
 - `validate_project.py`: checks that an OpenEvolve project has the expected files and can be prepared for a run.
-- `run_openevolve.py`: builds an `opencode run` command with UI-provided parameters, Chinese-language prompting, output directory, and extra OpenEvolve settings.
+- `run_openevolve.py`: builds direct `openevolve-run` or `opencode run` commands with UI-provided parameters, Chinese-language prompting, output directory, and extra OpenEvolve settings.
 - `summarize_run.py`: reads OpenEvolve output and summarizes best metrics/artifacts.
 
-In other words, the skill is already useful as a stable adapter between the UI backend and an agent-driven OpenEvolve run. It is not yet a complete interactive replacement for the original UI platform.
+In other words, the skill is now the shared interaction core for the UI backend and coding-agent workflow. Further work can deepen analysis and repair loops, but the core UI-equivalent command surface exists.
 
-## Target: Interactive Skill Equivalent To The UI
+## Implemented Interactive Skill Surface
 
-The desired target is a stateful, interactive skill that can guide a coding agent through the same workflow that the UI currently exposes.
-
-Suggested command surface:
+The skill now has a stateful command surface that can guide a coding agent through the same workflow that the UI currently exposes:
 
 ```text
 init                 create or select a workspace
@@ -104,13 +105,13 @@ summarize            report best metrics and best program path
 next                 recommend the next action based on current state
 ```
 
-The skill should keep a small JSON session state file, for example:
+The skill keeps a small JSON session state file:
 
 ```text
 .openevolve-agent/session.json
 ```
 
-That state should track:
+That state tracks:
 
 - selected project directory
 - selected run mode: `direct` or `opencode`
@@ -136,16 +137,9 @@ That state should track:
 | Download output | report output directory and selected artifacts |
 | Backend validation | `validate` |
 
-## Recommended Next Implementation Step
+## Current Shared Architecture
 
-There are two viable ways to remove the current blocker:
-
-1. Register and publish the `openevolve-unified-primary` opencode agent as part of the public setup.
-2. Add a direct-run mode to the skill runner and backend so the UI can call `openevolve-run` without requiring a custom opencode agent.
-
-For a lighter open-source architecture, option 2 is the better default. It makes the UI repo runnable with OpenEvolve plus provider credentials, while keeping the opencode-agent path as an advanced mode.
-
-After that, the interactive skill can become the shared core:
+The interactive skill is now the shared core:
 
 ```text
 UI frontend
@@ -164,6 +158,8 @@ This would let the project ship as two related open-source entry points:
 - Coding-agent skill version: conversational project setup, validation, execution, and result analysis.
 
 Both should share the same project format and runner scripts.
+
+Recommended next implementation step: deepen the post-run loop by letting the skill analyze failed runs, propose file repairs, and optionally apply bounded fixes before re-validating.
 
 ## Local Run Commands
 

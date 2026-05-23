@@ -6,6 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+import re
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
@@ -64,36 +65,114 @@ def _extra_args(extras: dict[str, Any] | None) -> list[str]:
     return args
 
 
+def _safe_name(raw: str) -> str:
+    name = re.sub(r"[^A-Za-z0-9_.-]+", "_", raw.strip()).strip("._-")
+    return name or "project"
+
+
+def _runner_mode(mode: str | None = None) -> str:
+    raw = (
+        mode
+        or os.environ.get("AI4MATH_EVOLVE_RUN_MODE")
+        or os.environ.get("EVOLVE_RUN_MODE")
+        or "direct"
+    )
+    value = str(raw).strip().lower()
+    return value if value in {"direct", "opencode"} else "direct"
+
+
+def _env_first(env: dict[str, str], *names: str) -> str:
+    for name in names:
+        value = str(env.get(name) or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def provider_extras_from_env(env: dict[str, str] | None = None) -> dict[str, str]:
+    source = env or os.environ
+    base_url = _env_first(source, "LLM_BASE_URL", "DEEPSEEK_BASE_URL")
+    model = _env_first(source, "LLM_MODEL_ID", "DEEPSEEK_MODEL")
+    extras: dict[str, str] = {}
+    if base_url:
+        extras["api_base"] = base_url
+    if model:
+        extras["primary_model"] = model
+        extras["secondary_model"] = model
+    return extras
+
+
 def build_run_payload(
     project_dir: Path,
     *,
     iterations: int,
     checkpoint_interval: int,
     output_dir: Path,
+    mode: str | None = None,
+    workspace: Path | None = None,
+    project_name: str | None = None,
     agent: str = "openevolve-unified-primary",
     language: str = "zh-CN",
     extras: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    script = script_path("run_openevolve.py")
-    args = [
-        str(Path(project_dir).resolve()),
+    script = script_path("interactive_session.py")
+    project = Path(project_dir).resolve()
+    output = Path(output_dir).resolve()
+    session_workspace = Path(workspace).resolve() if workspace else project
+    selected_project = _safe_name(project_name or project.name)
+    selected_mode = _runner_mode(mode)
+
+    init_args = [
+        "--workspace",
+        str(session_workspace),
+        "--json",
+        "init",
+        "--project",
+        str(project),
+        "--name",
+        selected_project,
+    ]
+    _run_json(script, init_args)
+
+    configure_args = [
+        "--workspace",
+        str(session_workspace),
+        "--json",
+        "configure",
         "--mode",
-        "opencode",
+        selected_mode,
         "--agent",
         agent,
         "--iterations",
         str(iterations),
         "--checkpoint-interval",
         str(checkpoint_interval),
-        "--output-dir",
-        str(Path(output_dir).resolve()),
         "--language",
         language,
-        "--dry-run",
-        "--json",
         *_extra_args(extras),
     ]
-    return _run_json(script, args)
+    _run_json(script, configure_args)
+
+    run_args = [
+        "--workspace",
+        str(session_workspace),
+        "--json",
+        "run",
+        "--project",
+        selected_project,
+        "--run-id",
+        output.name,
+        "--output-dir",
+        str(output),
+        "--dry-run",
+    ]
+    payload = _run_json(script, run_args)
+    payload["mode"] = selected_mode
+    payload["workspace"] = str(session_workspace)
+    payload["initArgv"] = init_args
+    payload["configureArgv"] = configure_args
+    payload["argv"] = run_args
+    return payload
 
 
 def build_run_command(
@@ -102,6 +181,9 @@ def build_run_command(
     iterations: int,
     checkpoint_interval: int,
     output_dir: Path,
+    mode: str | None = None,
+    workspace: Path | None = None,
+    project_name: str | None = None,
     agent: str = "openevolve-unified-primary",
     language: str = "zh-CN",
     extras: dict[str, Any] | None = None,
@@ -111,6 +193,9 @@ def build_run_command(
         iterations=iterations,
         checkpoint_interval=checkpoint_interval,
         output_dir=output_dir,
+        mode=mode,
+        workspace=workspace,
+        project_name=project_name,
         agent=agent,
         language=language,
         extras=extras,
@@ -119,3 +204,59 @@ def build_run_command(
     if not isinstance(command, list) or not all(isinstance(item, str) for item in command):
         raise SkillRunnerError("skill runner payload missing string-list command")
     return command
+
+
+def record_external_run(
+    project_dir: Path,
+    *,
+    run_id: str,
+    output_dir: Path,
+    log_path: Path,
+    pid: int,
+    mode: str,
+    command: list[str],
+    workspace: Path | None = None,
+    project_name: str | None = None,
+) -> dict[str, Any]:
+    script = script_path("interactive_session.py")
+    project = Path(project_dir).resolve()
+    session_workspace = Path(workspace).resolve() if workspace else project
+    selected_project = _safe_name(project_name or project.name)
+
+    init_args = [
+        "--workspace",
+        str(session_workspace),
+        "--json",
+        "init",
+        "--project",
+        str(project),
+        "--name",
+        selected_project,
+    ]
+    _run_json(script, init_args)
+
+    args = [
+        "--workspace",
+        str(session_workspace),
+        "--json",
+        "record-run",
+        "--project",
+        selected_project,
+        "--run-id",
+        run_id,
+        "--output-dir",
+        str(Path(output_dir).resolve()),
+        "--log-path",
+        str(Path(log_path).resolve()),
+        "--pid",
+        str(int(pid)),
+        "--status",
+        "running",
+        "--mode",
+        _runner_mode(mode),
+        "--command-json",
+        json.dumps(command),
+    ]
+    payload = _run_json(script, args)
+    payload["argv"] = args
+    return payload
