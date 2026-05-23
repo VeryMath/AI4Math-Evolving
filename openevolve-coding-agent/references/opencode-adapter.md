@@ -12,5 +12,7 @@ The agent should execute OpenEvolve rather than only proposing a plan. The promp
 - `iterations`
 - `checkpoint_interval`
 - optional `output_dir`
+- optional `--language zh-CN` to require Simplified Chinese natural-language output
+- optional `--extra key=value` pairs for UI-selected parameters such as `num_islands`, `population_size`, or `mutation_rate`
 
 The UI repo can call `scripts/run_openevolve.py --mode opencode --json` to construct the same command.

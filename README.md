@@ -16,3 +16,17 @@ This repository is the skill-first counterpart to the OpenEvolve UI bridge. It i
 ```bash
 python3 -m unittest discover -s tests -v
 ```
+
+## Runner Contract
+
+```bash
+python3 openevolve-coding-agent/scripts/run_openevolve.py /path/to/project \
+  --mode opencode \
+  --iterations 10 \
+  --checkpoint-interval 5 \
+  --output-dir /path/to/output \
+  --language zh-CN \
+  --extra num_islands=2 \
+  --dry-run \
+  --json
+```

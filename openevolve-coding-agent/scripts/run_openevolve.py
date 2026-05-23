@@ -7,13 +7,38 @@ import subprocess
 from pathlib import Path
 
 
-def build_prompt(project_dir: Path, iterations: int, checkpoint_interval: int, output_dir: Path | None) -> str:
+def parse_extra(values: list[str]) -> list[tuple[str, str]]:
+    pairs: list[tuple[str, str]] = []
+    for raw in values:
+        if "=" not in raw:
+            raise ValueError(f"--extra must use key=value format: {raw}")
+        key, value = raw.split("=", 1)
+        key = key.strip()
+        if not key:
+            raise ValueError(f"--extra key must not be empty: {raw}")
+        pairs.append((key, value.strip()))
+    return pairs
+
+
+def build_prompt(
+    project_dir: Path,
+    iterations: int,
+    checkpoint_interval: int,
+    output_dir: Path | None,
+    *,
+    language: str = "",
+    extra: list[tuple[str, str]] | None = None,
+) -> str:
     lines = [
         "Please run one OpenEvolve task now. Do not only write a plan.",
         f"project_dir: {project_dir}",
         f"iterations: {iterations}",
         f"checkpoint_interval: {checkpoint_interval}",
     ]
+    if language.strip().lower() in {"zh", "zh-cn", "chinese", "simplified-chinese"}:
+        lines.insert(0, "语言要求（强制）：所有自然语言回复必须使用简体中文；不要输出 <think>。")
+    for key, value in extra or []:
+        lines.append(f"{key}: {value}")
     if output_dir:
         lines.append(f"output_dir: {output_dir}")
     lines.append("When finished, emit a concise summary and then a final line: DONE")
@@ -42,13 +67,26 @@ def main() -> int:
     parser.add_argument("--iterations", type=int, default=10)
     parser.add_argument("--checkpoint-interval", type=int, default=5)
     parser.add_argument("--output-dir", default="")
+    parser.add_argument("--language", default="")
+    parser.add_argument("--extra", action="append", default=[])
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
 
     project_dir = Path(args.project).resolve()
     output_dir = Path(args.output_dir).resolve() if args.output_dir else None
-    prompt = build_prompt(project_dir, args.iterations, args.checkpoint_interval, output_dir)
+    try:
+        extra = parse_extra(args.extra)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+    prompt = build_prompt(
+        project_dir,
+        args.iterations,
+        args.checkpoint_interval,
+        output_dir,
+        language=args.language,
+        extra=extra,
+    )
 
     if args.mode == "direct":
         command = ["openevolve-run", str(project_dir), "--iterations", str(args.iterations)]

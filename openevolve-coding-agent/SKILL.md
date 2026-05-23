@@ -22,7 +22,7 @@ python openevolve-coding-agent/scripts/validate_project.py /path/to/project --js
 4. Run through the selected adapter. Use dry-run first when wiring a new UI or automation:
 
 ```bash
-python openevolve-coding-agent/scripts/run_openevolve.py /path/to/project --mode opencode --iterations 10 --dry-run --json
+python openevolve-coding-agent/scripts/run_openevolve.py /path/to/project --mode opencode --iterations 10 --language zh-CN --dry-run --json
 ```
 
 5. Summarize the output directory after a run:
