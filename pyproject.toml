@@ -1,7 +1,7 @@
 [project]
-name = "openevolve-coding-agent-skill"
+name = "ai4math-evolving-skill"
 version = "0.1.0"
-description = "Codex skill and scripts for OpenEvolve coding-agent workflows"
+description = "Codex skill and scripts for AI4Math-Evolving workflows"
 requires-python = ">=3.10"
 dependencies = []
 

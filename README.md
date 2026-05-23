@@ -1,8 +1,8 @@
-# OpenEvolve Coding Agent Skill
+# AI4Math-Evolving Skill
 
 An agent-native workflow for creating, validating, running, and summarizing OpenEvolve projects.
 
-This repository is the skill-first counterpart to the OpenEvolve UI bridge. It is intended for coding agents such as Codex, OpenCode, or similar tools that can read project files, execute scripts, repair errors, and report results.
+This repository is the skill-first counterpart to the AI4Math-Evolving UI bridge. It is intended for coding agents such as Codex, OpenCode, or similar tools that can read project files, execute scripts, repair errors, and report results.
 
 ## Contents
 
