@@ -9,6 +9,9 @@ from pathlib import Path
 from typing import Any
 
 
+CONFIG_NAMES = ("config.yaml", "config.yml", "config_default.yaml")
+
+
 def error(code: str, message: str, path: str = "") -> dict[str, str]:
     return {"code": code, "message": message, "path": path}
 
@@ -27,13 +30,13 @@ def validate_project(project: Path) -> dict[str, Any]:
 
     initial = project / "initial_program.py"
     evaluator = project / "evaluator.py"
-    config = project / "config.yaml"
+    config = next((project / name for name in CONFIG_NAMES if (project / name).is_file()), project / "config.yaml")
     if not initial.is_file():
         errors.append(error("missing_file", "missing initial_program.py", "initial_program.py"))
     if not evaluator.is_file():
         errors.append(error("missing_file", "missing evaluator.py", "evaluator.py"))
     if not config.is_file():
-        errors.append(error("missing_file", "missing config.yaml", "config.yaml"))
+        errors.append(error("missing_file", "missing config.yaml, config.yml, or config_default.yaml", "config.yaml"))
 
     if initial.is_file():
         text = initial.read_text(encoding="utf-8", errors="replace")
@@ -59,11 +62,17 @@ def validate_project(project: Path) -> dict[str, Any]:
         text = config.read_text(encoding="utf-8", errors="replace")
         for required in ("max_iterations", "checkpoint_interval"):
             if not re.search(rf"(?m)^\s*{required}\s*:", text):
-                errors.append(error("missing_config_key", f"config.yaml missing {required}", "config.yaml"))
+                errors.append(error("missing_config_key", f"{config.name} missing {required}", config.name))
         if re.search(r"(?im)api_key\s*:\s*['\"]?(?!\$\{)[A-Za-z0-9_\-]{12,}", text):
-            errors.append(error("plaintext_secret", "config.yaml contains a plaintext api_key", "config.yaml"))
+            errors.append(error("plaintext_secret", f"{config.name} contains a plaintext api_key", config.name))
 
-    return {"ok": not errors, "errors": errors, "warnings": warnings}
+    return {
+        "ok": not errors,
+        "projectDir": str(project),
+        "configPath": str(config) if config.is_file() else "",
+        "errors": errors,
+        "warnings": warnings,
+    }
 
 
 def main() -> int:

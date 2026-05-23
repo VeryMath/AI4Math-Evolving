@@ -77,6 +77,16 @@ class ValidateProjectTests(unittest.TestCase):
                 [e["message"] for e in payload["errors"]],
             )
 
+    def test_config_yml_is_accepted(self):
+        with tempfile.TemporaryDirectory() as td:
+            project = Path(td)
+            self.make_project(project)
+            (project / "config.yml").write_text((project / "config.yaml").read_text(encoding="utf-8"), encoding="utf-8")
+            (project / "config.yaml").unlink()
+            payload = self.run_validator(project)
+            self.assertTrue(payload["ok"])
+            self.assertTrue(payload["configPath"].endswith("config.yml"))
+
 
 if __name__ == "__main__":
     unittest.main()

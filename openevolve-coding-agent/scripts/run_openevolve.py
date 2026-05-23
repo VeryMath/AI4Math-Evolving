@@ -7,6 +7,9 @@ import subprocess
 from pathlib import Path
 
 
+CONFIG_NAMES = ("config.yaml", "config.yml", "config_default.yaml")
+
+
 def parse_extra(values: list[str]) -> list[tuple[str, str]]:
     pairs: list[tuple[str, str]] = []
     for raw in values:
@@ -59,6 +62,53 @@ def build_opencode_command(agent: str, project_dir: Path, prompt: str) -> list[s
     ]
 
 
+def project_config(project_dir: Path) -> Path:
+    for name in CONFIG_NAMES:
+        candidate = project_dir / name
+        if candidate.is_file():
+            return candidate
+    return project_dir / "config.yaml"
+
+
+def build_direct_command(
+    project_dir: Path,
+    iterations: int,
+    output_dir: Path | None,
+    *,
+    extra: list[tuple[str, str]] | None = None,
+) -> list[str]:
+    command = [
+        "openevolve-run",
+        str(project_dir / "initial_program.py"),
+        str(project_dir / "evaluator.py"),
+        "--config",
+        str(project_config(project_dir)),
+        "--iterations",
+        str(iterations),
+    ]
+    if output_dir:
+        command.extend(["--output", str(output_dir)])
+
+    option_map = {
+        "api_base": "--api-base",
+        "api-base": "--api-base",
+        "primary_model": "--primary-model",
+        "primary-model": "--primary-model",
+        "secondary_model": "--secondary-model",
+        "secondary-model": "--secondary-model",
+        "target_score": "--target-score",
+        "target-score": "--target-score",
+        "log_level": "--log-level",
+        "log-level": "--log-level",
+        "checkpoint": "--checkpoint",
+    }
+    for key, value in extra or []:
+        option = option_map.get(key)
+        if option and value:
+            command.extend([option, value])
+    return command
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("project")
@@ -89,7 +139,7 @@ def main() -> int:
     )
 
     if args.mode == "direct":
-        command = ["openevolve-run", str(project_dir), "--iterations", str(args.iterations)]
+        command = build_direct_command(project_dir, args.iterations, output_dir, extra=extra)
     else:
         command = build_opencode_command(args.agent, project_dir, prompt)
 

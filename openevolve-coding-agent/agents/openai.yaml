@@ -1,4 +1,4 @@
 interface:
-  display_name: "OpenEvolve Coding Agent"
-  short_description: "Run and repair OpenEvolve projects"
-  default_prompt: "Use $openevolve-coding-agent to validate this OpenEvolve project, run it, and summarize the best metrics."
+  display_name: "AI4Math-Evolving Agent"
+  short_description: "Interactively run and inspect OpenEvolve projects"
+  default_prompt: "Use $openevolve-coding-agent to import or select this OpenEvolve project, validate it, configure a run, tail logs, and summarize the best metrics."
