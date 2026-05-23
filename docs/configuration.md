@@ -33,7 +33,7 @@ UI backend -> backend/skill_runner.py -> openevolve-coding-agent-skill -> openco
 For local development, keep the repositories as siblings:
 
 ```text
-advanced_ai_platform_interface/
+AI4Math-Evolving/
 openevolve-coding-agent-skill/
 ```
 

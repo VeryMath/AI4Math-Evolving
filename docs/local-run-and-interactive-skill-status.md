@@ -2,7 +2,7 @@
 
 Date: 2026-05-23
 
-This note records the current verification result and the target shape for turning the UI workflow into an interactive `openevolve-coding-agent` skill.
+This note records the current AI4Math-Evolving verification result and the target shape for turning the UI workflow into an interactive `openevolve-coding-agent` skill.
 
 ## Summary
 

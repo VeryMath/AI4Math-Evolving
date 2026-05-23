@@ -30,7 +30,7 @@ export function TopNav() {
           <Zap className="size-3 absolute -bottom-0.5 -right-0.5" style={{ color: colors.accent }} />
         </div>
         <div>
-          <h1 className="font-semibold text-lg text-white tracking-tight">OpenEvolve</h1>
+          <h1 className="font-semibold text-lg text-white tracking-tight">AI4Math-Evolving</h1>
           <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">{t('nav.subtitle')}</p>
         </div>
       </div>

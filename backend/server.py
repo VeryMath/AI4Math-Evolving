@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenEvolve <-> Frontend Bridge (标准库无依赖版)
+AI4Math-Evolving <-> Frontend Bridge (标准库无依赖版)
 
 功能：
   - 文件管理（zip 上传、项目列表、输出列表、文件浏览）
@@ -3782,7 +3782,7 @@ def main() -> None:
     host = os.environ.get("EVOLVE_BRIDGE_HOST", "127.0.0.1")
     port = int(os.environ.get("EVOLVE_BRIDGE_PORT", "8001"))
     server = ThreadingHTTPServer((host, port), Handler)
-    print(f"OpenEvolve Bridge listening on http://{host}:{port}")
+    print(f"AI4Math-Evolving Bridge listening on http://{host}:{port}")
     server.serve_forever()
 
 

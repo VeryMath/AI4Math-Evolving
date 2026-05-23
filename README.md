@@ -1,11 +1,11 @@
-# Advanced AI Platform Interface
+# AI4Math-Evolving
 
-A local web UI for running OpenEvolve workflows through coding-agent orchestration.
+AI4Math-Evolving is a local web UI for running OpenEvolve workflows through coding-agent orchestration.
 
-This repository is the UI half of a two-repo design:
+This repository is the UI half of the AI4Math-Evolving two-repo design:
 
 ```text
-advanced_ai_platform_interface/      # browser UI and deterministic backend
+AI4Math-Evolving/                    # browser UI and deterministic backend
 openevolve-coding-agent-skill/       # canonical agent workflow and runner scripts
 ```
 

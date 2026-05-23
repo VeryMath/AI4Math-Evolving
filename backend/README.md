@@ -1,11 +1,11 @@
-# OpenEvolve Bridge (Stdlib 后端，无 FastAPI 依赖)
+# AI4Math-Evolving Bridge (Stdlib 后端，无 FastAPI 依赖)
 
 这个后端负责把前端的 upload/start/stop/event 事件对接到 OpenEvolve 的项目目录演化流程。
 
 ## 端口与目录
 
 - 默认监听：`127.0.0.1:8001`
-- 数据根目录：`advanced_ai_platform_interface/server_data/`
+- 数据根目录：`AI4Math-Evolving/server_data/`
 
 ## 启动
 
