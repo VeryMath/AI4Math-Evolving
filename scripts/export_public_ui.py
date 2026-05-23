@@ -11,7 +11,7 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_SOURCE = str(SCRIPT_DIR.parent)
-DEFAULT_TARGET = str(SCRIPT_DIR.parent.parent / "advanced-ai-platform-interface-public")
+DEFAULT_TARGET = str(SCRIPT_DIR.parent.parent / "AI4Math-Evolving")
 
 DEFAULT_EXCLUDES = [
     ".git",

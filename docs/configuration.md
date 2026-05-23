@@ -12,7 +12,7 @@
 - `EVOLVE_BRIDGE_HOST`: backend host, default `127.0.0.1`.
 - `EVOLVE_BRIDGE_PORT`: backend port, default `8001`.
 - `VITE_PORT`: frontend dev server port, default `5173`.
-- `OPENEVOLVE_SKILL_REPO`: optional path to the sibling `openevolve-coding-agent-skill` repository. Defaults to `../openevolve-coding-agent-skill` relative to this UI repo.
+- `OPENEVOLVE_SKILL_REPO`: optional path to the sibling `AI4Math-Evolving-Skill` repository. Defaults to `../AI4Math-Evolving-Skill` relative to this UI repo.
 
 `LLM_*` variables take precedence over `DEEPSEEK_*` variables in backend result analysis.
 
@@ -27,14 +27,14 @@ Do not commit real API keys.
 Run start requests are routed through the standalone skill repo runner:
 
 ```text
-UI backend -> backend/skill_runner.py -> openevolve-coding-agent-skill -> opencode -> OpenEvolve
+UI backend -> backend/skill_runner.py -> AI4Math-Evolving-Skill -> opencode -> OpenEvolve
 ```
 
 For local development, keep the repositories as siblings:
 
 ```text
 AI4Math-Evolving/
-openevolve-coding-agent-skill/
+AI4Math-Evolving-Skill/
 ```
 
-If you use a different layout, set `OPENEVOLVE_SKILL_REPO` to the absolute path of `openevolve-coding-agent-skill`.
+If you use a different layout, set `OPENEVOLVE_SKILL_REPO` to the absolute path of `AI4Math-Evolving-Skill`.

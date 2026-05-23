@@ -33,7 +33,7 @@ See [local-run-and-interactive-skill-status.md](local-run-and-interactive-skill-
 `/api/runs/start` constructs the opencode command through the `openevolve-coding-agent` skill runner. The backend still owns deterministic Web/API work such as upload, auth, SSE, file browsing, process tracking, and downloads.
 
 ```bash
-python3 ../openevolve-coding-agent-skill/openevolve-coding-agent/scripts/run_openevolve.py /path/to/project --mode opencode --iterations 10 --dry-run --json
+python3 ../AI4Math-Evolving-Skill/openevolve-coding-agent/scripts/run_openevolve.py /path/to/project --mode opencode --iterations 10 --dry-run --json
 ```
 
 Set `OPENEVOLVE_SKILL_REPO` if the skill repo is not a sibling of the UI repo.

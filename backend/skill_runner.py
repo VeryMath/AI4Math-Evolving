@@ -9,7 +9,7 @@ from typing import Any
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-DEFAULT_SKILL_REPO = ROOT_DIR.parent / "openevolve-coding-agent-skill"
+DEFAULT_SKILL_REPO = ROOT_DIR.parent / "AI4Math-Evolving-Skill"
 
 
 class SkillRunnerError(RuntimeError):
@@ -27,7 +27,7 @@ def script_path(script_name: str, repo_root: Path | None = None) -> Path:
     if not path.is_file():
         raise SkillRunnerError(
             f"missing OpenEvolve skill runner script: {path}. "
-            "Set OPENEVOLVE_SKILL_REPO to the openevolve-coding-agent-skill repository."
+            "Set OPENEVOLVE_SKILL_REPO to the AI4Math-Evolving-Skill repository."
         )
     return path
 

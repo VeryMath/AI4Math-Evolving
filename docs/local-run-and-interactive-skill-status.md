@@ -170,7 +170,7 @@ Both should share the same project format and runner scripts.
 Start backend:
 
 ```bash
-export OPENEVOLVE_SKILL_REPO=/path/to/openevolve-coding-agent-skill
+export OPENEVOLVE_SKILL_REPO=/path/to/AI4Math-Evolving-Skill
 python3 backend/server.py
 ```
 

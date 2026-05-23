@@ -6,10 +6,10 @@ This repository is the UI half of the AI4Math-Evolving two-repo design:
 
 ```text
 AI4Math-Evolving/                    # browser UI and deterministic backend
-openevolve-coding-agent-skill/       # canonical agent workflow and runner scripts
+AI4Math-Evolving-Skill/              # canonical agent workflow and runner scripts
 ```
 
-The UI backend handles predictable web work: upload, auth, run state, SSE, file browsing, downloads, and result analysis. Evolution orchestration is delegated through the sibling `openevolve-coding-agent-skill` runner, which constructs the `opencode run --agent openevolve-unified-primary` command that drives OpenEvolve.
+The UI backend handles predictable web work: upload, auth, run state, SSE, file browsing, downloads, and result analysis. Evolution orchestration is delegated through the sibling `AI4Math-Evolving-Skill` runner, which constructs the `opencode run --agent openevolve-unified-primary` command that drives OpenEvolve.
 
 ## Architecture
 
@@ -17,7 +17,7 @@ The UI backend handles predictable web work: upload, auth, run state, SSE, file 
 Browser UI
   -> Python stdlib backend
   -> backend/skill_runner.py
-  -> openevolve-coding-agent-skill
+  -> AI4Math-Evolving-Skill
   -> opencode / coding agent
   -> OpenEvolve
 ```
@@ -31,7 +31,7 @@ This keeps the backend thin without asking a coding agent to serve HTTP, manage 
 - `opencode` CLI configured locally
 - OpenEvolve available to the coding-agent runtime
 - A provider API key in `.env` or your shell
-- The sibling `openevolve-coding-agent-skill` repository, or `OPENEVOLVE_SKILL_REPO` pointing to it
+- The sibling `AI4Math-Evolving-Skill` repository, or `OPENEVOLVE_SKILL_REPO` pointing to it
 
 ## Quick Start
 
