@@ -22,4 +22,4 @@ cp .env.example .env
 ./start_all.sh
 ```
 
-By default the backend listens on `127.0.0.1:8001` and Vite listens on `127.0.0.1:5173`.
+By default the backend listens on `127.0.0.1:8001` and Vite is available at `http://localhost:5173/`.

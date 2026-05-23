@@ -26,6 +26,8 @@ Start the backend and frontend, then run:
 ./scripts/smoke_ui_repo.sh
 ```
 
+See [local-run-and-interactive-skill-status.md](local-run-and-interactive-skill-status.md) for the latest local verification notes and the interactive skill roadmap.
+
 ## Skill-runner integration
 
 `/api/runs/start` constructs the opencode command through the `openevolve-coding-agent` skill runner. The backend still owns deterministic Web/API work such as upload, auth, SSE, file browsing, process tracking, and downloads.

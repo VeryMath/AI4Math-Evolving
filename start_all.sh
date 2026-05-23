@@ -42,8 +42,8 @@ ensure_node_version() {
   local current_major
   current_major="$(node -p "process.versions.node.split('.')[0]")"
   if [[ "$current_major" != "$REQUIRED_NODE_MAJOR" ]]; then
-    echo "警告：当前 Node 主版本是 $current_major，建议使用 $REQUIRED_NODE_MAJOR。"
-    echo "如果你有 nvm，请安装后重试，本脚本会自动执行 nvm use $REQUIRED_NODE_MAJOR。"
+    echo "警告：当前 Node 主版本是 ${current_major}，建议使用 ${REQUIRED_NODE_MAJOR}。"
+    echo "如果你有 nvm，请安装后重试，本脚本会自动执行 nvm use ${REQUIRED_NODE_MAJOR}。"
   fi
 }
 
@@ -70,7 +70,7 @@ start_process() {
       echo "错误：${name} 启动失败，请查看日志 $logfile"
       exit 1
     fi
-    echo "${name} 已后台运行，PID=$pid，日志: $logfile"
+    echo "${name} 已后台运行，PID=${pid}，日志: ${logfile}"
   else
     "$@" &
   fi
