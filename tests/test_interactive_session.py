@@ -98,6 +98,14 @@ class InteractiveSessionTests(unittest.TestCase):
             nxt = self.run_cli(workspace, "next")
             self.assertIn("run", nxt["next"])
 
+    def test_session_config_has_no_opencode_agent_backend(self):
+        with tempfile.TemporaryDirectory() as td:
+            workspace = Path(td) / "workspace"
+            status = self.run_cli(workspace, "status")
+            config = status["config"]
+            self.assertEqual(config["mode"], "direct")
+            self.assertNotIn("agent", config)
+
     def test_summarize_explicit_run_dir(self):
         with tempfile.TemporaryDirectory() as td:
             workspace = Path(td) / "workspace"

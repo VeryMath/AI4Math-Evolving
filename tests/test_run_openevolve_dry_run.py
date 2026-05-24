@@ -11,55 +11,22 @@ SCRIPT = ROOT / "openevolve-coding-agent" / "scripts" / "run_openevolve.py"
 
 
 class RunOpenEvolveDryRunTests(unittest.TestCase):
-    def test_opencode_dry_run_command(self):
-        with tempfile.TemporaryDirectory() as td:
-            project = Path(td)
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPT),
-                    str(project),
-                    "--mode",
-                    "opencode",
-                    "--iterations",
-                    "7",
-                    "--checkpoint-interval",
-                    "2",
-                    "--dry-run",
-                    "--json",
-                ],
-                text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=False,
-            )
-            self.assertEqual(result.returncode, 0, result.stderr)
-            payload = json.loads(result.stdout)
-            self.assertEqual(payload["mode"], "opencode")
-            self.assertIn("opencode", payload["command"][0])
-            self.assertIn("iterations: 7", payload["prompt"])
-            self.assertIn("checkpoint_interval: 2", payload["prompt"])
+    def make_project(self, root: Path) -> None:
+        (root / "initial_program.py").write_text("", encoding="utf-8")
+        (root / "evaluator.py").write_text("", encoding="utf-8")
+        (root / "config.yaml").write_text("", encoding="utf-8")
 
-    def test_prompt_accepts_language_and_extra_parameters(self):
+    def test_default_dry_run_uses_direct_openevolve_command(self):
         with tempfile.TemporaryDirectory() as td:
             project = Path(td)
+            self.make_project(project)
             result = subprocess.run(
                 [
                     sys.executable,
                     str(SCRIPT),
                     str(project),
-                    "--mode",
-                    "opencode",
                     "--iterations",
                     "7",
-                    "--checkpoint-interval",
-                    "2",
-                    "--language",
-                    "zh-CN",
-                    "--extra",
-                    "num_islands=3",
-                    "--extra",
-                    "mutation_rate=0.2",
                     "--dry-run",
                     "--json",
                 ],
@@ -70,16 +37,35 @@ class RunOpenEvolveDryRunTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
-            self.assertIn("所有自然语言回复必须使用简体中文", payload["prompt"])
-            self.assertIn("num_islands: 3", payload["prompt"])
-            self.assertIn("mutation_rate: 0.2", payload["prompt"])
+            self.assertEqual(payload["mode"], "direct")
+            self.assertEqual(payload["command"][0], "openevolve-run")
+
+    def test_opencode_mode_is_not_supported_in_skill_layer(self):
+        with tempfile.TemporaryDirectory() as td:
+            project = Path(td)
+            self.make_project(project)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    str(project),
+                    "--mode",
+                    "opencode",
+                    "--dry-run",
+                    "--json",
+                ],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("invalid choice", result.stderr)
 
     def test_direct_dry_run_builds_openevolve_run_command(self):
         with tempfile.TemporaryDirectory() as td:
             project = Path(td)
-            (project / "initial_program.py").write_text("", encoding="utf-8")
-            (project / "evaluator.py").write_text("", encoding="utf-8")
-            (project / "config.yaml").write_text("", encoding="utf-8")
+            self.make_project(project)
             output = project / "out"
             result = subprocess.run(
                 [

@@ -19,7 +19,7 @@ from typing import Any
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from run_openevolve import build_direct_command, build_opencode_command, build_prompt, parse_extra  # noqa: E402
+from run_openevolve import build_direct_command, parse_extra  # noqa: E402
 from summarize_run import summarize  # noqa: E402
 from validate_project import validate_project  # noqa: E402
 
@@ -31,7 +31,6 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "iterations": 10,
     "checkpoint_interval": 5,
     "language": "zh-CN",
-    "agent": "openevolve-unified-primary",
     "extras": {},
 }
 
@@ -85,6 +84,8 @@ def load_state(workspace: Path) -> dict[str, Any]:
     merged_config = dict(DEFAULT_CONFIG)
     merged_config.update(state["config"])
     merged_config.setdefault("extras", {})
+    merged_config["mode"] = "direct"
+    merged_config.pop("agent", None)
     state["config"] = merged_config
     return state
 
@@ -184,18 +185,7 @@ def build_command(state: dict[str, Any], project: Path, output_dir: Path) -> tup
     config = state["config"]
     extras_dict = config.get("extras") or {}
     extra = [(str(key), str(value)) for key, value in extras_dict.items()]
-    mode = config.get("mode", "direct")
-    if mode == "direct":
-        return build_direct_command(project, int(config["iterations"]), output_dir, extra=extra), ""
-    prompt = build_prompt(
-        project,
-        int(config["iterations"]),
-        int(config["checkpoint_interval"]),
-        output_dir,
-        language=str(config.get("language") or ""),
-        extra=extra,
-    )
-    return build_opencode_command(str(config.get("agent") or DEFAULT_CONFIG["agent"]), project, prompt), prompt
+    return build_direct_command(project, int(config["iterations"]), output_dir, extra=extra), ""
 
 
 def cmd_init(args: argparse.Namespace, workspace: Path, state: dict[str, Any]) -> dict[str, Any]:
@@ -258,7 +248,7 @@ def cmd_validate(args: argparse.Namespace, workspace: Path, state: dict[str, Any
 
 def cmd_configure(args: argparse.Namespace, workspace: Path, state: dict[str, Any]) -> dict[str, Any]:
     config = state["config"]
-    for key in ("mode", "iterations", "checkpoint_interval", "language", "agent"):
+    for key in ("mode", "iterations", "checkpoint_interval", "language"):
         value = getattr(args, key)
         if value is not None:
             config[key] = value
@@ -501,11 +491,10 @@ def parser() -> argparse.ArgumentParser:
     validate.set_defaults(func=cmd_validate)
 
     configure = sub.add_parser("configure")
-    configure.add_argument("--mode", choices=["direct", "opencode"])
+    configure.add_argument("--mode", choices=["direct"])
     configure.add_argument("--iterations", type=int)
     configure.add_argument("--checkpoint-interval", dest="checkpoint_interval", type=int)
     configure.add_argument("--language")
-    configure.add_argument("--agent")
     configure.add_argument("--extra", action="append", default=[])
     configure.add_argument("--clear-extras", action="store_true")
     configure.set_defaults(func=cmd_configure)
@@ -526,7 +515,7 @@ def parser() -> argparse.ArgumentParser:
     record.add_argument("--log-path", default="")
     record.add_argument("--pid", type=int, default=0)
     record.add_argument("--status", default="running")
-    record.add_argument("--mode", choices=["direct", "opencode"], default="direct")
+    record.add_argument("--mode", choices=["direct"], default="direct")
     record.add_argument("--command-json", default="")
     record.set_defaults(func=cmd_record_run)
 
