@@ -20,6 +20,28 @@ Use the bundled scripts as private tool primitives. Do not present the skill as 
 - After each observation, decide what changed and what should happen next. Prefer "I found X, so I will do Y" over generic status updates.
 - Keep secrets out of artifacts. Provider keys must stay in environment variables or placeholders, never plaintext config, logs, examples, or summaries.
 
+## Capabilities
+
+Use the skill to guide these agent-led tasks:
+
+- Goal intake: turn a loose optimization or research request into an objective metric, run budget, and expected artifact.
+- Project readiness: inspect, validate, and minimally repair `initial_program.py`, `evaluator.py`, and config files.
+- Baseline run: start with a short probe or baseline before spending a larger search budget.
+- Evolution search: launch direct OpenEvolve runs, track status, tail logs, stop runs, and preserve output directories.
+- Result analysis: summarize best metrics, best-program artifacts, evaluator failures, and likely reasons a run stalled.
+- Visualization data: extract metric series, checkpoint timelines, best-artifact paths, and log highlights for a UI or report without rendering the UI here.
+- Iteration planning: use user feedback and observed metrics to decide whether to adjust code, evaluator, config, budget, or acceptance criteria.
+
+## User Guidance
+
+When a user gives an open-ended goal, guide them toward one crisp next experiment. Prefer short prompts such as:
+
+- "I can run a short baseline first; what metric should count as success if the evaluator exposes several?"
+- "This may spend API budget. Should I cap the first search to a small probe?"
+- "The best score improved but the logs show evaluator noise. I can inspect the best program or tighten the evaluator next."
+
+Do not ask for information already present in project files. When the user is unsure, choose conservative defaults, explain the assumption, and keep the first run small.
+
 ## Agent Decision Loop
 
 1. **Understand**: identify the evolving goal, objective metric, constraints, and what the user considers success.

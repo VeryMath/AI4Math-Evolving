@@ -30,6 +30,8 @@ class SkillDocsTests(unittest.TestCase):
         text = self.read(SKILL)
         self.assertIn("## Interaction Contract", text)
         self.assertIn("## Agent Decision Loop", text)
+        self.assertIn("## Capabilities", text)
+        self.assertIn("## User Guidance", text)
         self.assertIn("## Tool Primitives", text)
         self.assertNotIn("## Workflow", text)
 
@@ -46,6 +48,13 @@ class SkillDocsTests(unittest.TestCase):
         for path in (SKILL, README, AGENT_META):
             self.assertNotIn(token, self.read(path).lower(), str(path))
         self.assertFalse((REFERENCE_DIR / f"{token}-adapter.md").exists())
+
+    def test_skill_stays_lightweight_without_mcp_surface(self):
+        text = self.read(SKILL).lower()
+        self.assertNotIn("mcp", text)
+        self.assertIn("short probe", text)
+        self.assertIn("visualization data", text)
+        self.assertIn("baseline", text)
 
 
 if __name__ == "__main__":
