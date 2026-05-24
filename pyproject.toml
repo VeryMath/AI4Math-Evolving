@@ -1,7 +1,7 @@
 [project]
 name = "ai4math-evolving-skill"
 version = "0.1.0"
-description = "Codex skill and scripts for goal-driven AI4Math-Evolving sessions"
+description = "Coding-agent skill and scripts for goal-driven AI4Math-Evolving sessions"
 requires-python = ">=3.10"
 dependencies = []
 

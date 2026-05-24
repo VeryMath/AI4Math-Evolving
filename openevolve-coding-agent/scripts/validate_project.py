@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import ast
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any
@@ -22,6 +23,18 @@ def has_function(source: str, name: str) -> bool:
     except SyntaxError:
         return False
     return any(isinstance(node, ast.FunctionDef) and node.name == name for node in ast.walk(tree))
+
+
+def config_api_key_value(text: str) -> str:
+    match = re.search(r"(?im)^\s*api_key\s*:\s*['\"]?([^'\"\s#]+)", text)
+    if not match:
+        return ""
+    return match.group(1).strip()
+
+
+def env_var_name(value: str) -> str:
+    match = re.fullmatch(r"\$\{([^}]+)\}", value)
+    return match.group(1) if match else ""
 
 
 def validate_project(project: Path) -> dict[str, Any]:
@@ -65,6 +78,25 @@ def validate_project(project: Path) -> dict[str, Any]:
                 errors.append(error("missing_config_key", f"{config.name} missing {required}", config.name))
         if re.search(r"(?im)api_key\s*:\s*['\"]?(?!\$\{)[A-Za-z0-9_\-]{12,}", text):
             errors.append(error("plaintext_secret", f"{config.name} contains a plaintext api_key", config.name))
+        api_key = config_api_key_value(text)
+        if not api_key or api_key.lower() in {"null", "none"}:
+            warnings.append(
+                error(
+                    "missing_llm_api_key_config",
+                    f"{config.name} should set llm.api_key to an environment placeholder such as ${{LLM_API_KEY}} before real runs",
+                    config.name,
+                )
+            )
+        else:
+            var_name = env_var_name(api_key)
+            if var_name and not os.environ.get(var_name):
+                warnings.append(
+                    error(
+                        "missing_api_key_env",
+                        f"{config.name} references ${{{var_name}}}, but environment variable {var_name} is not set",
+                        config.name,
+                    )
+                )
 
     return {
         "ok": not errors,

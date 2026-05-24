@@ -1,8 +1,8 @@
 # AI4Math-Evolving Skill
 
-An agent-native skill for turning a user's AI4Math/OpenEvolve goal into an interactive coding-agent session.
+An agent-native, coding-agent skill for turning an AI4Math/OpenEvolve goal into an interactive experiment session.
 
-This repository is the skill-first counterpart to the AI4Math-Evolving UI bridge. Its public experience is not a command checklist: a coding agent should understand the goal, inspect project state, ask for feedback when it matters, run or repair experiments, and adapt from observed metrics and logs.
+The skill helps a coding agent inspect an OpenEvolve project, validate its files, propose a small next experiment, run or monitor the search, summarize best metrics, and adapt from observed logs and artifacts.
 
 ## Contents
 

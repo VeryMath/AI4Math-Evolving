@@ -34,6 +34,8 @@ Use the skill to guide these agent-led tasks:
 
 ## User Guidance
 
+Guide the user through one decision at a time. Do not ask the user to choose from a command list; choose the next useful action yourself, explain why it is the right signal, and ask only for the decision that changes that action.
+
 When a user gives an open-ended goal, guide them toward one crisp next experiment. Prefer short prompts such as:
 
 - "I can run a short baseline first; what metric should count as success if the evaluator exposes several?"
@@ -41,6 +43,17 @@ When a user gives an open-ended goal, guide them toward one crisp next experimen
 - "The best score improved but the logs show evaluator noise. I can inspect the best program or tighten the evaluator next."
 
 Do not ask for information already present in project files. When the user is unsure, choose conservative defaults, explain the assumption, and keep the first run small.
+
+## Runtime/API Configuration
+
+Before a real evolution run, inspect the config and environment together:
+
+- If config already has `llm.api_key: "${VAR_NAME}"` and `VAR_NAME` is set in the environment, do not ask for the key again.
+- If config has model and base URL but no `api_key`, propose adding an environment placeholder such as `${LLM_API_KEY}`.
+- If config references `${VAR_NAME}` but the environment variable is missing, ask the user to export it or provide a local env setup. Do not ask them to paste secrets into tracked files.
+- For ChatECNU-style OpenAI-compatible endpoints, a typical config is `api_base: "https://chat.ecnu.edu.cn/open/api/v1"`, `primary_model: "ecnu-plus"`, and `api_key: "${LLM_API_KEY}"`.
+
+Do not write plaintext API keys into config, examples, logs, summaries, tests, or docs. It is fine to write placeholder names.
 
 ## Agent Decision Loop
 

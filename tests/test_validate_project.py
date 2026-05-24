@@ -1,8 +1,10 @@
 import json
+import os
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from typing import Optional
 import unittest
 
 
@@ -34,13 +36,14 @@ class ValidateProjectTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-    def run_validator(self, project: Path) -> dict:
+    def run_validator(self, project: Path, env: Optional[dict[str, str]] = None) -> dict:
         result = subprocess.run(
             [sys.executable, str(SCRIPT), str(project), "--json"],
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
+            env=env,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         return json.loads(result.stdout)
@@ -86,6 +89,56 @@ class ValidateProjectTests(unittest.TestCase):
             payload = self.run_validator(project)
             self.assertTrue(payload["ok"])
             self.assertTrue(payload["configPath"].endswith("config.yml"))
+
+    def test_missing_api_key_config_warns_before_real_run(self):
+        with tempfile.TemporaryDirectory() as td:
+            project = Path(td)
+            self.make_project(project)
+            (project / "config.yaml").write_text(
+                "max_iterations: 3\n"
+                "checkpoint_interval: 1\n"
+                "llm:\n"
+                "  primary_model: ecnu-plus\n"
+                "  api_base: https://chat.ecnu.edu.cn/open/api/v1\n",
+                encoding="utf-8",
+            )
+            payload = self.run_validator(project)
+            self.assertTrue(payload["ok"])
+            self.assertIn("missing_llm_api_key_config", [w["code"] for w in payload["warnings"]])
+
+    def test_unset_api_key_env_placeholder_warns(self):
+        with tempfile.TemporaryDirectory() as td:
+            project = Path(td)
+            self.make_project(project)
+            env = dict(os.environ)
+            env.pop("AI4MATH_TEST_KEY", None)
+            (project / "config.yaml").write_text(
+                "max_iterations: 3\n"
+                "checkpoint_interval: 1\n"
+                "llm:\n"
+                "  api_key: \"${AI4MATH_TEST_KEY}\"\n",
+                encoding="utf-8",
+            )
+            payload = self.run_validator(project, env=env)
+            self.assertTrue(payload["ok"])
+            self.assertIn("missing_api_key_env", [w["code"] for w in payload["warnings"]])
+
+    def test_set_api_key_env_placeholder_does_not_warn(self):
+        with tempfile.TemporaryDirectory() as td:
+            project = Path(td)
+            self.make_project(project)
+            env = dict(os.environ)
+            env["AI4MATH_TEST_KEY"] = "present-but-not-printed"
+            (project / "config.yaml").write_text(
+                "max_iterations: 3\n"
+                "checkpoint_interval: 1\n"
+                "llm:\n"
+                "  api_key: \"${AI4MATH_TEST_KEY}\"\n",
+                encoding="utf-8",
+            )
+            payload = self.run_validator(project, env=env)
+            self.assertTrue(payload["ok"])
+            self.assertNotIn("missing_api_key_env", [w["code"] for w in payload["warnings"]])
 
 
 if __name__ == "__main__":
