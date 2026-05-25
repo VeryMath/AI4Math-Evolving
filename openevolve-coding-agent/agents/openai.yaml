@@ -1,4 +1,4 @@
 interface:
   display_name: "AI4Math-Evolving Agent"
   short_description: "Goal-driven OpenEvolve sessions with agent feedback"
-  default_prompt: "Use $openevolve-coding-agent to turn my evolving goal and feedback into an interactive OpenEvolve session: inspect the project, propose the next experiment, run only when ready, and summarize the best metrics."
+  default_prompt: "Use $openevolve-coding-agent，用中文引导我的 OpenEvolve 目标和反馈：先检查项目，提出下一步实验，只在准备好时运行，并总结最佳指标。"

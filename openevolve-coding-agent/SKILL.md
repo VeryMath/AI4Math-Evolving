@@ -34,6 +34,8 @@ Use the skill to guide these agent-led tasks:
 
 ## User Guidance
 
+Reply in Chinese by default unless the user asks for another language or the surrounding project explicitly requires English.
+
 Guide the user through one decision at a time. Do not ask the user to choose from a command list; choose the next useful action yourself, explain why it is the right signal, and ask only for the decision that changes that action.
 
 When a user gives an open-ended goal, guide them toward one crisp next experiment. Prefer short prompts such as:

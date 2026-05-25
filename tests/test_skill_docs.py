@@ -43,6 +43,12 @@ class SkillDocsTests(unittest.TestCase):
         self.assertIn("Do not ask the user to choose from a command list", text)
         self.assertIn("choose the next useful action yourself", text)
 
+    def test_skill_defaults_to_chinese_responses(self):
+        text = self.read(SKILL)
+        agent_meta = self.read(AGENT_META)
+        self.assertIn("Reply in Chinese by default", text)
+        self.assertIn("用中文", agent_meta)
+
     def test_readme_and_agent_metadata_present_goal_session(self):
         readme = self.read(README)
         agent_meta = self.read(AGENT_META)
