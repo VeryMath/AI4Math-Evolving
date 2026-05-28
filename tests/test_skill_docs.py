@@ -9,6 +9,7 @@ README = ROOT / "README.md"
 PYPROJECT = ROOT / "pyproject.toml"
 AGENT_META = ROOT / "openevolve-coding-agent" / "agents" / "openai.yaml"
 REFERENCE_DIR = ROOT / "openevolve-coding-agent" / "references"
+EXAMPLE_DIR = ROOT / "examples" / "admm-adaptive-rho-session"
 
 
 class SkillDocsTests(unittest.TestCase):
@@ -49,10 +50,68 @@ class SkillDocsTests(unittest.TestCase):
         self.assertIn("Reply in Chinese by default", text)
         self.assertIn("用中文", agent_meta)
 
+    def test_skill_uses_goal_first_readiness_instead_of_fixed_order(self):
+        text = self.read(SKILL)
+        agent_meta = self.read(AGENT_META)
+        self.assertIn("## Goal-Directed Environment Setup", text)
+        self.assertIn("For new-user onboarding, establish a runnable environment before project design", text)
+        self.assertIn("Let the user's goal shape defaults", text)
+        self.assertIn("Do not turn readiness into a fixed checklist", text)
+        self.assertIn("openevolve-run", text)
+        self.assertNotIn("2. **Ready API**", text)
+        self.assertNotIn("3. **Ready Environment**", text)
+        self.assertIn("~/Desktop/AI4Math-Evolving", text)
+        self.assertIn("先配好运行环境", agent_meta)
+        self.assertIn("以目标为导向", agent_meta)
+
+    def test_skill_describes_openevolve_as_python_cli_not_local_deployment(self):
+        text = self.read(SKILL)
+        agent_meta = self.read(AGENT_META)
+        self.assertIn("OpenEvolve is used as a Python package and CLI", text)
+        self.assertIn("Do not describe this as deploying a local service", text)
+        self.assertIn("Prefer installing or importing the package and calling the CLI", text)
+        self.assertIn("do not clone or deploy OpenEvolve itself unless the user asks", text)
+        self.assertIn("直接调包", agent_meta)
+        self.assertIn("无需本地部署服务", agent_meta)
+
+    def test_public_docs_use_formal_new_user_onboarding_language(self):
+        readme = self.read(README)
+        skill = self.read(SKILL)
+        agent_meta = self.read(AGENT_META)
+        public_text = f"{readme}\n{skill}\n{agent_meta}"
+        self.assertIn("New User Onboarding Path", readme)
+        self.assertIn("first-run onboarding", skill)
+        self.assertIn("新用户首次上手路径", agent_meta)
+        self.assertNotIn("小白", public_text)
+        self.assertNotIn("first path", public_text.lower())
+
+    def test_empty_workspace_initializes_visible_workspace_first(self):
+        readme = self.read(README)
+        skill = self.read(SKILL)
+        agent_meta = self.read(AGENT_META)
+        self.assertIn("empty or temporary workspace", skill)
+        self.assertIn("default action is to initialize", skill)
+        self.assertIn("~/Desktop/AI4Math-Evolving", skill)
+        self.assertIn("Do not force a single workspace path", skill)
+        self.assertIn("report its absolute path", skill)
+        self.assertIn("--workspace ~/Desktop/AI4Math-Evolving --json init", skill)
+        self.assertIn("defaulting to `~/Desktop/AI4Math-Evolving` when no better project path is known", readme)
+        self.assertIn("空目录时先初始化", agent_meta)
+
+    def test_onboarding_configures_environment_before_domain_questionnaires(self):
+        text = self.read(SKILL)
+        agent_meta = self.read(AGENT_META)
+        self.assertIn("Before asking domain-shaping questions", text)
+        self.assertIn("workspace, Python interpreter, `openevolve` package, `openevolve-run`, provider API variable, model, and base URL", text)
+        self.assertIn("Do not start with a multi-option algorithm or benchmark questionnaire", text)
+        self.assertIn("If the user provides API settings in chat", text)
+        self.assertIn("acknowledge receipt without repeating the secret value", text)
+        self.assertIn("先检查工作区、Python/OpenEvolve、API 环境变量和模型配置", agent_meta)
+
     def test_readme_and_agent_metadata_present_goal_session(self):
         readme = self.read(README)
         agent_meta = self.read(AGENT_META)
-        self.assertIn("Goal-Driven Usage", readme)
+        self.assertIn("New User Onboarding Path", readme)
         self.assertNotIn("Runner Contract", readme)
         self.assertIn("goal", agent_meta.lower())
         self.assertIn("feedback", agent_meta.lower())
@@ -83,6 +142,34 @@ class SkillDocsTests(unittest.TestCase):
         self.assertIn("`${LLM_API_KEY}`", text)
         self.assertIn("Do not write plaintext API keys", text)
         self.assertIn("If config already has", text)
+
+    def test_examples_are_repository_level_case_packages(self):
+        readme = self.read(README)
+        self.assertIn("`examples/`: repository-level examples", readme)
+        self.assertIn("Examples live at the repository root under `examples/`", readme)
+        self.assertTrue((EXAMPLE_DIR / "README.md").is_file())
+        self.assertFalse((ROOT / "openevolve-coding-agent" / "examples").exists())
+
+        required_project_files = [
+            "project/initial_program.py",
+            "project/evaluator.py",
+            "project/admm_benchmark.py",
+            "project/config.yaml",
+            "project/tests/test_evaluator_contract.py",
+            "project/README.md",
+        ]
+        for rel_path in required_project_files:
+            self.assertTrue((EXAMPLE_DIR / rel_path).is_file(), rel_path)
+
+    def test_examples_do_not_store_secrets_or_local_run_artifacts(self):
+        local_workspace_path = "/".join(["", "Users", "conanxu", "Desktop", "AI4Math-Evolving"])
+        for path in EXAMPLE_DIR.rglob("*"):
+            if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc":
+                text = self.read(path)
+                self.assertNotRegex(text, r"sk-[A-Za-z0-9]{8,}")
+                self.assertNotIn(local_workspace_path, text)
+        self.assertIn('${LLM_API_KEY}', self.read(EXAMPLE_DIR / "project" / "config.yaml"))
+        self.assertFalse((EXAMPLE_DIR / "project" / "runs").exists())
 
 
 if __name__ == "__main__":

@@ -11,20 +11,28 @@ The skill helps a coding agent inspect an OpenEvolve project, validate its files
 - `openevolve-coding-agent/scripts/validate_project.py`: validates OpenEvolve project files.
 - `openevolve-coding-agent/scripts/run_openevolve.py`: runs or dry-runs OpenEvolve directly.
 - `openevolve-coding-agent/scripts/summarize_run.py`: extracts best metrics and artifacts from a run directory.
+- `examples/`: repository-level examples. Each example should be a self-contained case package with a narrative README and the main runnable project files.
 
-## Goal-Driven Usage
+## New User Onboarding Path
 
 Use the skill conversationally:
 
-> Use `$openevolve-coding-agent` to improve this project's search strategy. Start with a short baseline, keep API keys out of files, and ask me before running anything long.
+> Use `$openevolve-coding-agent` to turn my optimization goal into a runnable OpenEvolve project. Start small, keep API keys out of files, and ask me before running anything long.
 
-The expected agent behavior is:
+For a user who starts with only a goal, the expected agent behavior is:
 
-- infer the OpenEvolve project shape from files;
+- turn the goal into an objective metric, run budget, and expected artifact;
+- configure the runnable environment first: workspace, Python/OpenEvolve CLI, API environment variable, model, and base URL;
+- create or select a visible workspace, defaulting to `~/Desktop/AI4Math-Evolving` when no better project path is known;
+- create or select a starter OpenEvolve project when needed;
 - validate and repair only relevant project issues;
-- propose a small next experiment before spending runtime;
+- build a dry-run command before spending runtime;
 - run, inspect logs, summarize best metrics, and recommend the next move;
 - incorporate user feedback into the next experiment.
+
+## Examples
+
+Examples live at the repository root under `examples/`, not inside the skill runtime directory. A useful example should include the main project files needed to understand and rerun the case, such as `initial_program.py`, `evaluator.py`, `config.yaml`, tests, and a README. Generated run directories and plaintext API keys should not be committed.
 
 ## Internal Tooling
 

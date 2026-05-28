@@ -1,4 +1,4 @@
 interface:
   display_name: "AI4Math-Evolving Agent"
   short_description: "Goal-driven OpenEvolve sessions with agent feedback"
-  default_prompt: "Use $openevolve-coding-agent，用中文引导我的 OpenEvolve 目标和反馈：先检查项目，提出下一步实验，只在准备好时运行，并总结最佳指标。"
+  default_prompt: "Use $openevolve-coding-agent，用中文、以目标为导向引导我的 OpenEvolve 目标和反馈：围绕新用户首次上手路径，先配好运行环境，先检查工作区、Python/OpenEvolve、API 环境变量和模型配置；空目录时先初始化 ~/Desktop/AI4Math-Evolving 可见工作区并报告路径，但不强制固定路径；直接调包/CLI，无需本地部署服务；再创建或选择项目，提出最小下一步并总结最佳指标。"
