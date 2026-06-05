@@ -6,6 +6,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "openevolve-coding-agent" / "SKILL.md"
 README = ROOT / "README.md"
+README_ZH = ROOT / "README.zh-CN.md"
 PYPROJECT = ROOT / "pyproject.toml"
 AGENT_META = ROOT / "openevolve-coding-agent" / "agents" / "openai.yaml"
 REFERENCE_DIR = ROOT / "openevolve-coding-agent" / "references"
@@ -76,10 +77,13 @@ class SkillDocsTests(unittest.TestCase):
 
     def test_public_docs_use_formal_new_user_onboarding_language(self):
         readme = self.read(README)
+        readme_zh = self.read(README_ZH)
         skill = self.read(SKILL)
         agent_meta = self.read(AGENT_META)
-        public_text = f"{readme}\n{skill}\n{agent_meta}"
-        self.assertIn("New User Onboarding Path", readme)
+        public_text = f"{readme}\n{readme_zh}\n{skill}\n{agent_meta}"
+        self.assertIn("What The Coding Agent Should Do", readme)
+        self.assertIn("Coding Agent 应该做什么", readme_zh)
+        self.assertIn("第一次运行保持小规模", readme_zh)
         self.assertIn("first-run onboarding", skill)
         self.assertIn("新用户首次上手路径", agent_meta)
         self.assertNotIn("小白", public_text)
@@ -87,6 +91,7 @@ class SkillDocsTests(unittest.TestCase):
 
     def test_empty_workspace_initializes_visible_workspace_first(self):
         readme = self.read(README)
+        readme_zh = self.read(README_ZH)
         skill = self.read(SKILL)
         agent_meta = self.read(AGENT_META)
         self.assertIn("empty or temporary workspace", skill)
@@ -95,7 +100,8 @@ class SkillDocsTests(unittest.TestCase):
         self.assertIn("Do not force a single workspace path", skill)
         self.assertIn("report its absolute path", skill)
         self.assertIn("--workspace ~/Desktop/AI4Math-Evolving --json init", skill)
-        self.assertIn("defaulting to `~/Desktop/AI4Math-Evolving` when no better project path is known", readme)
+        self.assertIn("defaulting to `~/Desktop/AI4Math-Evolving` when no better path is known", readme)
+        self.assertIn("默认使用 `~/Desktop/AI4Math-Evolving`", readme_zh)
         self.assertIn("空目录时先初始化", agent_meta)
 
     def test_onboarding_configures_environment_before_domain_questionnaires(self):
@@ -110,23 +116,45 @@ class SkillDocsTests(unittest.TestCase):
 
     def test_readme_and_agent_metadata_present_goal_session(self):
         readme = self.read(README)
+        readme_zh = self.read(README_ZH)
         agent_meta = self.read(AGENT_META)
-        self.assertIn("New User Onboarding Path", readme)
+        self.assertIn("Chinese guide: [README.zh-CN.md](README.zh-CN.md)", readme)
+        self.assertIn("English guide: [README.md](README.md)", readme_zh)
+        self.assertIn("https://github.com/VeryMath/AI4Math-Evolving", readme)
+        self.assertIn("https://github.com/VeryMath/AI4Math-Evolving", readme_zh)
+        self.assertIn("## 1. Install With Your Coding Agent", readme)
+        self.assertIn("Please detect the target agent and its skill/config location", readme)
+        self.assertNotIn("Install this skill for OpenCode", readme)
+        self.assertIn("## 2. Start An Interactive OpenEvolve Session", readme)
+        self.assertIn("## 1. 用 Coding Agent 安装", readme_zh)
+        self.assertIn("请自动识别目标 agent 和它的 skill/config 位置", readme_zh)
+        self.assertNotIn("请把这个 skill 安装到 OpenCode", readme_zh)
+        self.assertIn("## 2. 开始一次 OpenEvolve 交互会话", readme_zh)
         self.assertNotIn("Runner Contract", readme)
+        self.assertNotIn("Runner Contract", readme_zh)
         self.assertIn("goal", agent_meta.lower())
         self.assertIn("feedback", agent_meta.lower())
 
     def test_public_docs_are_platform_neutral_and_not_process_notes(self):
         readme = self.read(README)
+        readme_zh = self.read(README_ZH)
         pyproject = self.read(PYPROJECT)
-        public_text = f"{readme}\n{pyproject}"
+        public_text = f"{readme}\n{readme_zh}\n{pyproject}"
         self.assertIn("coding-agent", readme)
+        self.assertIn("target agent", readme)
+        self.assertIn("目标 agent", readme_zh)
         self.assertNotIn("Codex", public_text)
         self.assertNotIn("UI bridge", readme)
 
-    def test_skill_layer_has_no_opencode_surface(self):
+    def test_readme_documents_opencode_install_without_skill_layer_surface(self):
         token = "open" + "code"
-        for path in (SKILL, README, AGENT_META):
+        readme = self.read(README)
+        readme_zh = self.read(README_ZH)
+        self.assertIn(token, readme.lower())
+        self.assertIn(token, readme_zh.lower())
+        self.assertIn("openevolve-coding-agent/SKILL.md", readme)
+        self.assertIn("openevolve-coding-agent/SKILL.md", readme_zh)
+        for path in (SKILL, AGENT_META):
             self.assertNotIn(token, self.read(path).lower(), str(path))
         self.assertFalse((REFERENCE_DIR / f"{token}-adapter.md").exists())
 
@@ -145,8 +173,9 @@ class SkillDocsTests(unittest.TestCase):
 
     def test_examples_are_repository_level_case_packages(self):
         readme = self.read(README)
-        self.assertIn("`examples/`: repository-level examples", readme)
-        self.assertIn("Examples live at the repository root under `examples/`", readme)
+        readme_zh = self.read(README_ZH)
+        self.assertIn("`examples/`: repository-level runnable examples", readme)
+        self.assertIn("`examples/`：仓库级可运行示例", readme_zh)
         self.assertTrue((EXAMPLE_DIR / "README.md").is_file())
         self.assertFalse((ROOT / "openevolve-coding-agent" / "examples").exists())
 
