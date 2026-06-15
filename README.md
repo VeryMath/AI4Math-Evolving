@@ -6,6 +6,40 @@ GitHub: <https://github.com/VeryMath/AI4Math-Evolving>
 
 `openevolve-coding-agent` is a coding-agent skill for interactive AI4Math/OpenEvolve experiment sessions. It is meant to be installed and operated by a coding agent: the agent reads the project, sets up the runnable environment, asks only decision-changing questions, runs small probes before expensive searches, and keeps API keys out of files.
 
+## Installation / Loading
+
+Use the repository checkout first. Ask your coding agent to read:
+
+```text
+AGENTS.md
+SKILL.md
+openevolve-coding-agent/SKILL.md
+```
+
+If your agent supports local Skill discovery, install or link
+`openevolve-coding-agent/` into that agent's Skill path and reload the agent if
+needed. Platform-specific notes live in `CLAUDE.md`, `GEMINI.md`,
+`.codex/INSTALL.md`, and `.opencode/INSTALL.md`.
+
+## Quick Start
+
+```text
+Use this repository's AI4Math-Evolving workflow.
+
+Read:
+- AGENTS.md
+- SKILL.md
+- openevolve-coding-agent/SKILL.md
+
+Goal:
+<describe the optimization problem, algorithm idea, benchmark, or research objective>
+
+Constraints:
+- inspect first;
+- keep the first run small;
+- ask before long or expensive searches.
+```
+
 ## 1. Install With Your Coding Agent
 
 Give your coding agent this repository URL or this local checkout, then ask:
@@ -31,6 +65,19 @@ Please inspect the workspace first, set up the runnable OpenEvolve environment, 
 ```
 
 For an existing OpenEvolve project, also give the project path and the metric or behavior you care about. For a new project, just describe the target; the coding agent should create or select the workspace and starter project.
+
+## How To Interact
+
+Use a checkpoint loop:
+
+```text
+goal -> workspace inspection -> dry-run plan -> approve / revise / reject / skip
+     -> approved probe -> evidence summary -> next checkpoint
+```
+
+Use `approve` to run a proposed step, `revise` to update the plan, `reject` to
+stop the path, and `skip` to move past a phase. The agent should ask before API
+spend, long runs, source edits, dependency changes, or final claims.
 
 ## What The Coding Agent Should Do
 

@@ -6,6 +6,32 @@ GitHub：<https://github.com/VeryMath/AI4Math-Evolving>
 
 `openevolve-coding-agent` 是一个面向 AI4Math/OpenEvolve 实验的 coding-agent skill。它应该由 coding agent 来安装和操作：agent 负责读取项目、配置可运行环境、只在关键决策处提问、先跑小规模探测再做长搜索，并且不把 API key 写进文件。
 
+## 安装 / 加载
+
+优先从当前仓库 checkout 使用。让 coding agent 读取：
+
+```text
+AGENTS.md
+SKILL.md
+openevolve-coding-agent/SKILL.md
+```
+
+如果目标 agent 支持本地 Skill discovery，可以把 `openevolve-coding-agent/`
+安装或软链接到它的 Skill 路径，然后按需 reload 或 restart。各平台薄 adapter
+分别见 `.codex/INSTALL.md`、`CLAUDE.md`、`GEMINI.md` 和 `.opencode/INSTALL.md`。
+
+## 如何交互使用
+
+推荐使用 checkpoint 循环：
+
+```text
+目标 -> 工作区检查 -> dry-run 计划 -> approve / revise / reject / skip
+     -> 获批 probe -> 证据总结 -> 下一轮 checkpoint
+```
+
+`approve` 表示执行下一步，`revise` 表示先改计划，`reject` 表示停止当前路线，
+`skip` 表示跳过当前阶段。长时间运行、API 预算、依赖变化、源码修改和最终结论前都应先问用户。
+
 ## 1. 用 Coding Agent 安装
 
 把 GitHub 链接或当前本地仓库交给你的 coding agent，然后说：

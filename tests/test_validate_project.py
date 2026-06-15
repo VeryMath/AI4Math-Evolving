@@ -70,7 +70,7 @@ class ValidateProjectTests(unittest.TestCase):
             project = Path(td)
             self.make_project(project)
             (project / "config.yaml").write_text(
-                "max_iterations: 3\ncheckpoint_interval: 1\napi_key: \"sk-real-secret-value\"\n",
+                "max_iterations: 3\ncheckpoint_interval: 1\napi_key: \"plain-text-test-key\"\n",
                 encoding="utf-8",
             )
             payload = self.run_validator(project)
