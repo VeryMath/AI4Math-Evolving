@@ -2,8 +2,6 @@
 
 Chinese guide: [README.zh-CN.md](README.zh-CN.md)
 
-GitHub: <https://github.com/VeryMath/AI4Math-Evolving>
-
 `openevolve-coding-agent` is a coding-agent skill for interactive AI4Math/OpenEvolve experiment sessions. It is meant to be installed and operated by a coding agent: the agent reads the project, sets up the runnable environment, asks only decision-changing questions, runs small probes before expensive searches, and keeps API keys out of files.
 
 ## Installation / Loading
@@ -20,6 +18,16 @@ If your agent supports local Skill discovery, install or link
 `openevolve-coding-agent/` into that agent's Skill path and reload the agent if
 needed. Platform-specific notes live in `CLAUDE.md`, `GEMINI.md`,
 `.codex/INSTALL.md`, and `.opencode/INSTALL.md`.
+
+To install from a remote repository, give your coding agent this prompt:
+
+```text
+Install the `openevolve-coding-agent` skill from https://github.com/VeryMath/AI4Math-Evolving into the coding agent environment I am using.
+
+Please detect the target agent and its skill/config location, preserve existing configuration, install or link only what is needed, keep API keys out of files, verify that `openevolve-coding-agent/SKILL.md` is discoverable, and tell me whether I need to restart the target agent.
+```
+
+The installing agent should own the mechanics. If the target is OpenCode or another skill-aware agent, it should use that agent's native skill discovery path and verification command instead of asking you to edit config by hand.
 
 ## Quick Start
 
@@ -38,30 +46,6 @@ Constraints:
 - inspect first;
 - keep the first run small;
 - ask before long or expensive searches.
-```
-
-## 1. Install With Your Coding Agent
-
-Give your coding agent this repository URL or this local checkout, then ask:
-
-```text
-Install the `openevolve-coding-agent` skill from https://github.com/VeryMath/AI4Math-Evolving into the coding agent environment I am using.
-
-Please detect the target agent and its skill/config location, preserve existing configuration, install or link only what is needed, keep API keys out of files, verify that `openevolve-coding-agent/SKILL.md` is discoverable, and tell me whether I need to restart the target agent.
-```
-
-The installing agent should own the mechanics. If the target is OpenCode or another skill-aware agent, it should use that agent's native skill discovery path and verification command instead of asking you to edit config by hand.
-
-## 2. Start An Interactive OpenEvolve Session
-
-After installation, start by giving the coding agent your goal:
-
-```text
-Use $openevolve-coding-agent.
-
-My goal is: <describe the optimization problem, algorithm idea, benchmark, or research objective>.
-
-Please inspect the workspace first, set up the runnable OpenEvolve environment, keep the first run small, and ask me before any long or expensive run.
 ```
 
 For an existing OpenEvolve project, also give the project path and the metric or behavior you care about. For a new project, just describe the target; the coding agent should create or select the workspace and starter project.

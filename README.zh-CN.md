@@ -2,8 +2,6 @@
 
 English guide: [README.md](README.md)
 
-GitHub：<https://github.com/VeryMath/AI4Math-Evolving>
-
 `openevolve-coding-agent` 是一个面向 AI4Math/OpenEvolve 实验的 coding-agent skill。它应该由 coding agent 来安装和操作：agent 负责读取项目、配置可运行环境、只在关键决策处提问、先跑小规模探测再做长搜索，并且不把 API key 写进文件。
 
 ## 安装 / 加载
@@ -20,6 +18,30 @@ openevolve-coding-agent/SKILL.md
 安装或软链接到它的 Skill 路径，然后按需 reload 或 restart。各平台薄 adapter
 分别见 `.codex/INSTALL.md`、`CLAUDE.md`、`GEMINI.md` 和 `.opencode/INSTALL.md`。
 
+如果要从远端仓库安装，把这个 prompt 交给 coding agent：
+
+```text
+请把 https://github.com/VeryMath/AI4Math-Evolving 里的 `openevolve-coding-agent` skill 安装到我正在使用的 coding agent 环境。
+
+请自动识别目标 agent 和它的 skill/config 位置，保留已有配置，只安装或链接必要内容，不要把 API key 写进文件；安装后验证 `openevolve-coding-agent/SKILL.md` 能被发现，并告诉我是否需要重启目标 agent。
+```
+
+安装细节由 coding agent 负责。如果目标是 OpenCode 或其他支持 skill 的 agent，它应该使用目标 agent 原生的 skill 发现路径和验证命令，而不是让你手动编辑配置。
+
+## 快速开始
+
+把目标交给 coding agent：
+
+```text
+Use this repository's AI4Math-Evolving workflow.
+
+我的目标是：<描述优化问题、算法想法、benchmark 或研究目标>。
+
+请先检查工作区，配置可运行的 OpenEvolve 环境，第一次运行保持小规模；任何长时间或高成本运行前先问我。
+```
+
+如果已有 OpenEvolve 项目，同时给出项目路径和你关心的指标或行为。如果还没有项目，只描述目标即可；coding agent 应该自己创建或选择工作区和 starter project。
+
 ## 如何交互使用
 
 推荐使用 checkpoint 循环：
@@ -31,32 +53,6 @@ openevolve-coding-agent/SKILL.md
 
 `approve` 表示执行下一步，`revise` 表示先改计划，`reject` 表示停止当前路线，
 `skip` 表示跳过当前阶段。长时间运行、API 预算、依赖变化、源码修改和最终结论前都应先问用户。
-
-## 1. 用 Coding Agent 安装
-
-把 GitHub 链接或当前本地仓库交给你的 coding agent，然后说：
-
-```text
-请把 https://github.com/VeryMath/AI4Math-Evolving 里的 `openevolve-coding-agent` skill 安装到我正在使用的 coding agent 环境。
-
-请自动识别目标 agent 和它的 skill/config 位置，保留已有配置，只安装或链接必要内容，不要把 API key 写进文件；安装后验证 `openevolve-coding-agent/SKILL.md` 能被发现，并告诉我是否需要重启目标 agent。
-```
-
-安装细节由 coding agent 负责。如果目标是 OpenCode 或其他支持 skill 的 agent，它应该使用目标 agent 原生的 skill 发现路径和验证命令，而不是让你手动编辑配置。
-
-## 2. 开始一次 OpenEvolve 交互会话
-
-安装后，把目标交给 coding agent：
-
-```text
-Use $openevolve-coding-agent.
-
-我的目标是：<描述优化问题、算法想法、benchmark 或研究目标>。
-
-请先检查工作区，配置可运行的 OpenEvolve 环境，第一次运行保持小规模；任何长时间或高成本运行前先问我。
-```
-
-如果已有 OpenEvolve 项目，同时给出项目路径和你关心的指标或行为。如果还没有项目，只描述目标即可；coding agent 应该自己创建或选择工作区和 starter project。
 
 ## Coding Agent 应该做什么
 
