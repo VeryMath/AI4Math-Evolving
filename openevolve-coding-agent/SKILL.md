@@ -90,6 +90,10 @@ When a new workspace is useful and the user did not choose a location, use the v
 8. **Observe**: inspect logs, checkpoints, metrics, and best-program artifacts.
 9. **Adapt**: summarize the result, compare it with the goal, and choose whether to refine code, tune config, rerun, or ask the user.
 
+Best-program artifacts, improved metrics, and evaluator wins are search
+evidence, not proof. If an evolved result creates a theorem claim or proof
+obligation, route it to `agentic-rethlas-proving` or `AI4Math-Lean-Agents`.
+
 ## Tool Primitives
 
 Use these scripts behind the scenes when deterministic state, validation, execution, or summarization is useful:

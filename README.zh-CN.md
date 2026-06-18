@@ -4,6 +4,22 @@ English guide: [README.md](README.md)
 
 `openevolve-coding-agent` 是一个面向 AI4Math/OpenEvolve 实验的 coding-agent skill。它应该由 coding agent 来安装和操作：agent 负责读取项目、配置可运行环境、只在关键决策处提问、先跑小规模探测再做长搜索，并且不把 API key 写进文件。
 
+## AI4Math 角色
+
+这个 Skill 是 AI4Math 体系里的实验改进循环。当前面某个 Skill 已经产出候选猜想、
+证明策略、优化模型、evaluator 或科研代码工作流，而下一步需要在可度量反馈下自动搜索
+更好的代码或 prompt 时，使用它最合适。
+
+## 交接
+
+上游通常来自 `paper-to-skill`、`discover-math-problems`、`agentic-rethlas-proving`、
+优化 Skills 或计算复现 Skill。交接时应明确目标指标、预算、evaluator、starter files
+和 acceptance threshold。完成后把 best-program artifacts、logs、metrics 和下一轮建议
+交回原始 Skill。
+best-program artifacts 和改进后的 metrics 是 search evidence，不是 proof。如果 evolved
+结果提出 theorem 或 proof obligation，应交给 `agentic-rethlas-proving` 或
+`AI4Math-Lean-Agents`。
+
 ## 安装 / 加载
 
 优先从当前仓库 checkout 使用。让 coding agent 读取：

@@ -4,6 +4,25 @@ Chinese guide: [README.zh-CN.md](README.zh-CN.md)
 
 `openevolve-coding-agent` is a coding-agent skill for interactive AI4Math/OpenEvolve experiment sessions. It is meant to be installed and operated by a coding agent: the agent reads the project, sets up the runnable environment, asks only decision-changing questions, runs small probes before expensive searches, and keeps API keys out of files.
 
+## AI4Math Role
+
+This skill is the experiment-improvement loop in the AI4Math stack. Use it when
+a conjecture, proof strategy, optimization formulation, evaluator, or scientific
+computing workflow needs controlled search over code or prompts with measurable
+feedback. It is strongest after another skill has already produced a concrete
+artifact to improve.
+
+## Handoff
+
+Typical upstream inputs come from `paper-to-skill`, `discover-math-problems`,
+`agentic-rethlas-proving`, optimization Skills, or computational reproduction
+runs. Handoff artifacts should name the target metric, budget, evaluator,
+starter files, and acceptance threshold. Return best-program artifacts, logs,
+metrics, and next-iteration recommendations to the originating skill.
+Best-program artifacts and improved metrics are search evidence, not proof. If
+an evolved result suggests a theorem or proof obligation, route it to
+`agentic-rethlas-proving` or `AI4Math-Lean-Agents`.
+
 ## Installation / Loading
 
 Use the repository checkout first. Ask your coding agent to read:
