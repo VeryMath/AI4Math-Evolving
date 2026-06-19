@@ -14,27 +14,15 @@ English guide: [README.md](README.md)
 
 ## 安装 / 加载
 
-在你的 coding-agent 环境里 clone 或打开这个 skill 仓库，然后让 coding agent 读取：
+### 一句话安装
+
+把下面这句话发给你的 coding agent：
 
 ```text
-AGENTS.md
-SKILL.md
-openevolve-experiment-workflow/SKILL.md
+请帮我安装 `openevolve-experiment-workflow` skill，链接是：https://github.com/VeryMath/AI4Math-Evolving.git，分支：knXu-skill。请读取 `.agent.md`，安装其中声明的 Skill entrypoint，验证 `$openevolve-experiment-workflow` 可用，并告诉我是否需要重启 agent。
 ```
 
-如果目标 agent 支持本地 Skill discovery，可以把 `openevolve-experiment-workflow/`
-安装或软链接到它的 Skill 路径，然后按需 reload 或 restart。各平台薄 adapter
-分别见 `.codex/INSTALL.md`、`CLAUDE.md`、`GEMINI.md` 和 `.opencode/INSTALL.md`。
-
-如果要从远端仓库安装，把这个 prompt 交给 coding agent：
-
-```text
-请把 https://github.com/VeryMath/AI4Math-Evolving 里的 `openevolve-experiment-workflow` skill 安装到我正在使用的 coding agent 环境。
-
-请自动识别目标 agent 和它的 skill/config 位置，保留已有配置，只安装或链接必要内容，不要把 API key 写进文件；安装后验证 `openevolve-experiment-workflow/SKILL.md` 能被发现，并告诉我是否需要重启目标 agent。
-```
-
-安装细节由 coding agent 负责。如果目标是 OpenCode 或其他支持 skill 的 agent，它应该使用目标 agent 原生的 skill 发现路径和验证命令，而不是让你手动编辑配置。
+如果你已经有这个 skill 仓库的本地文件夹，把链接换成本地路径即可。clone、link、配置、reload/restart 检查和验证都交给 coding agent 处理。
 
 ## 快速开始
 

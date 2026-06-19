@@ -17,29 +17,17 @@ turns into a starter project.
 
 ## Installation / Loading
 
-Clone or open this skill repository in your coding-agent environment. Then ask
-your coding agent to read:
+### One-line Agent Install
+
+Copy this to your coding agent:
 
 ```text
-AGENTS.md
-SKILL.md
-openevolve-experiment-workflow/SKILL.md
+Please install the `openevolve-experiment-workflow` skill from https://github.com/VeryMath/AI4Math-Evolving.git (branch: knXu-skill). Read `.agent.md`, install the declared Skill entrypoint, verify that `$openevolve-experiment-workflow` is discoverable, and tell me whether I need to restart the agent.
 ```
 
-If your agent supports local Skill discovery, install or link
-`openevolve-experiment-workflow/` into that agent's Skill path and reload the agent if
-needed. Platform-specific notes live in `CLAUDE.md`, `GEMINI.md`,
-`.codex/INSTALL.md`, and `.opencode/INSTALL.md`.
-
-To install from a remote repository, give your coding agent this prompt:
-
-```text
-Install the `openevolve-experiment-workflow` skill from https://github.com/VeryMath/AI4Math-Evolving into the coding agent environment I am using.
-
-Please detect the target agent and its skill/config location, preserve existing configuration, install or link only what is needed, keep API keys out of files, verify that `openevolve-experiment-workflow/SKILL.md` is discoverable, and tell me whether I need to restart the target agent.
-```
-
-The installing agent should own the mechanics. If the target is OpenCode or another skill-aware agent, it should use that agent's native skill discovery path and verification command instead of asking you to edit config by hand.
+If you already have this skill repository locally, replace the repository URL
+with the local folder path. The coding agent should handle cloning, linking,
+configuration, reload/restart checks, and verification.
 
 ## Quick Start
 
