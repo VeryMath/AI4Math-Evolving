@@ -2,22 +2,22 @@
 
 Chinese guide: [README.zh-CN.md](README.zh-CN.md)
 
-`openevolve-experiment-workflow` is a coding-agent skill for interactive AI4Math/OpenEvolve experiment sessions. It is meant to be installed and operated by a coding agent: the agent reads the project, sets up the runnable environment, asks only decision-changing questions, runs small probes before expensive searches, and keeps API keys out of files.
+`openevolve-experiment-workflow` helps a coding agent run controlled OpenEvolve experiment sessions for code or prompt search.
 
-## What This Skill Does
+## When To Use It
 
-This standalone skill helps a coding agent run controlled OpenEvolve experiment
-sessions. Use it when you have code or prompts that can be evaluated by a metric
-and you want the agent to inspect the project, prepare a safe workspace, verify
-API/environment readiness, run a small probe before expensive search, and report
-from saved logs and metrics.
+Use this skill when you have:
 
-It can start from an existing OpenEvolve project or from a goal that the agent
-turns into a starter project.
+- code or prompts that can be scored by a metric;
+- an existing OpenEvolve project that needs inspection, repair, or a bounded run;
+- a research goal that can be turned into a starter project and evaluator;
+- API or runtime risk that should be checked before expensive search.
 
-## Installation / Loading
+## What It Produces
 
-### One-line Agent Install
+The agent should produce workspace state, dry-run plans, short-probe logs, metrics, checkpoints, best-program artifacts, and next-step recommendations.
+
+## Installation
 
 Copy this to your coding agent:
 

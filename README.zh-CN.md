@@ -2,19 +2,22 @@
 
 English guide: [README.md](README.md)
 
-`openevolve-experiment-workflow` 是一个面向 AI4Math/OpenEvolve 实验的 coding-agent skill。它应该由 coding agent 来安装和操作：agent 负责读取项目、配置可运行环境、只在关键决策处提问、先跑小规模探测再做长搜索，并且不把 API key 写进文件。
+`openevolve-experiment-workflow` 帮助 coding agent 运行受控的 OpenEvolve 代码或 prompt 搜索实验。
 
-## 这个 Skill 做什么
+## 适合什么任务
 
-这个独立 Skill 帮助 coding agent 运行受控的 OpenEvolve 实验会话。当你有可以用 metric
-评估的代码或 prompt，希望 agent 检查项目、准备安全 workspace、验证 API/environment、先跑小规模 probe，
-再决定是否进行更昂贵的搜索，并从保存的 logs 和 metrics 汇报结果时，可以直接使用它。
+当你有这些输入或需求时使用：
 
-它既可以从已有 OpenEvolve project 开始，也可以从一个目标开始，由 agent 创建 starter project。
+- 可以用 metric 打分的代码或 prompt；
+- 需要检查、修复或有边界运行的已有 OpenEvolve project；
+- 可以被整理成 starter project 和 evaluator 的研究目标；
+- 在昂贵搜索前需要先检查 API、runtime 和预算风险。
 
-## 安装 / 加载
+## 会产出什么
 
-### 一句话安装
+Agent 应产出 workspace state、dry-run plans、short-probe logs、metrics、checkpoints、best-program artifacts 和 next-step recommendations。
+
+## 安装
 
 把下面这句话发给你的 coding agent：
 
