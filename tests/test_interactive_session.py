@@ -10,7 +10,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "openevolve-coding-agent" / "scripts" / "interactive_session.py"
+SCRIPT = ROOT / "openevolve-experiment-workflow" / "scripts" / "interactive_session.py"
 
 
 class InteractiveSessionTests(unittest.TestCase):

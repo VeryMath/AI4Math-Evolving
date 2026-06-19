@@ -3,7 +3,7 @@
 This repository exposes a shared Skill layer at:
 
 ```text
-openevolve-coding-agent/SKILL.md
+openevolve-experiment-workflow/SKILL.md
 ```
 
 Use from the checkout by asking Codex to read `AGENTS.md`, `SKILL.md`, and the

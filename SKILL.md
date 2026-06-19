@@ -1,15 +1,15 @@
 ---
-name: ai4math-evolving-skill
+name: openevolve-experiment-workflow
 description: Use when running coding-agent-guided AI4Math/OpenEvolve experiment sessions, including workspace setup, dry-run validation, short probes, run summaries, and approval-gated longer evolution searches.
 ---
 
-# AI4Math Evolving Skill
+# OpenEvolve Experiment Workflow
 
 This root `SKILL.md` is a compatibility entrypoint for platforms that expect one
 top-level Skill file. The shared Skill layer lives at:
 
 ```text
-openevolve-coding-agent/SKILL.md
+openevolve-experiment-workflow/SKILL.md
 ```
 
 Read that concrete Skill before running an OpenEvolve session. Keep platform

@@ -7,7 +7,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "openevolve-coding-agent" / "scripts" / "summarize_run.py"
+SCRIPT = ROOT / "openevolve-experiment-workflow" / "scripts" / "summarize_run.py"
 
 
 class SummarizeRunTests(unittest.TestCase):

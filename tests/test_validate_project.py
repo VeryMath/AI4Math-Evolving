@@ -9,7 +9,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "openevolve-coding-agent" / "scripts" / "validate_project.py"
+SCRIPT = ROOT / "openevolve-experiment-workflow" / "scripts" / "validate_project.py"
 
 
 class ValidateProjectTests(unittest.TestCase):

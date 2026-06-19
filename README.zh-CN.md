@@ -1,8 +1,8 @@
-# AI4Math-Evolving Skill
+# OpenEvolve Experiment Workflow
 
 English guide: [README.md](README.md)
 
-`openevolve-coding-agent` 是一个面向 AI4Math/OpenEvolve 实验的 coding-agent skill。它应该由 coding agent 来安装和操作：agent 负责读取项目、配置可运行环境、只在关键决策处提问、先跑小规模探测再做长搜索，并且不把 API key 写进文件。
+`openevolve-experiment-workflow` 是一个面向 AI4Math/OpenEvolve 实验的 coding-agent skill。它应该由 coding agent 来安装和操作：agent 负责读取项目、配置可运行环境、只在关键决策处提问、先跑小规模探测再做长搜索，并且不把 API key 写进文件。
 
 ## AI4Math 角色
 
@@ -12,13 +12,13 @@ English guide: [README.md](README.md)
 
 ## 交接
 
-上游通常来自 `paper-to-skill`、`discover-math-problems`、`agentic-rethlas-proving`、
+上游通常来自 `paper-to-skill`、`discover-math-problems`、`rethlas-proving`、
 优化 Skills 或计算复现 Skill。交接时应明确目标指标、预算、evaluator、starter files
 和 acceptance threshold。完成后把 best-program artifacts、logs、metrics 和下一轮建议
 交回原始 Skill。
 best-program artifacts 和改进后的 metrics 是 search evidence，不是 proof。如果 evolved
-结果提出 theorem 或 proof obligation，应交给 `agentic-rethlas-proving` 或
-`AI4Math-Lean-Agents`。
+结果提出 theorem 或 proof obligation，应交给 `rethlas-proving` 或
+`lean-formalization`。
 
 ## 安装 / 加载
 
@@ -27,19 +27,19 @@ best-program artifacts 和改进后的 metrics 是 search evidence，不是 proo
 ```text
 AGENTS.md
 SKILL.md
-openevolve-coding-agent/SKILL.md
+openevolve-experiment-workflow/SKILL.md
 ```
 
-如果目标 agent 支持本地 Skill discovery，可以把 `openevolve-coding-agent/`
+如果目标 agent 支持本地 Skill discovery，可以把 `openevolve-experiment-workflow/`
 安装或软链接到它的 Skill 路径，然后按需 reload 或 restart。各平台薄 adapter
 分别见 `.codex/INSTALL.md`、`CLAUDE.md`、`GEMINI.md` 和 `.opencode/INSTALL.md`。
 
 如果要从远端仓库安装，把这个 prompt 交给 coding agent：
 
 ```text
-请把 https://github.com/VeryMath/AI4Math-Evolving 里的 `openevolve-coding-agent` skill 安装到我正在使用的 coding agent 环境。
+请把 https://github.com/VeryMath/AI4Math-Evolving 里的 `openevolve-experiment-workflow` skill 安装到我正在使用的 coding agent 环境。
 
-请自动识别目标 agent 和它的 skill/config 位置，保留已有配置，只安装或链接必要内容，不要把 API key 写进文件；安装后验证 `openevolve-coding-agent/SKILL.md` 能被发现，并告诉我是否需要重启目标 agent。
+请自动识别目标 agent 和它的 skill/config 位置，保留已有配置，只安装或链接必要内容，不要把 API key 写进文件；安装后验证 `openevolve-experiment-workflow/SKILL.md` 能被发现，并告诉我是否需要重启目标 agent。
 ```
 
 安装细节由 coding agent 负责。如果目标是 OpenCode 或其他支持 skill 的 agent，它应该使用目标 agent 原生的 skill 发现路径和验证命令，而不是让你手动编辑配置。
@@ -49,7 +49,7 @@ openevolve-coding-agent/SKILL.md
 把目标交给 coding agent：
 
 ```text
-Use this repository's AI4Math-Evolving workflow.
+Use this repository's OpenEvolve experiment workflow.
 
 我的目标是：<描述优化问题、算法想法、benchmark 或研究目标>。
 
@@ -96,9 +96,9 @@ Use this repository's AI4Math-Evolving workflow.
 
 ## 仓库结构
 
-- `openevolve-coding-agent/SKILL.md`：goal-driven AI4Math-Evolving 交互协议。
-- `openevolve-coding-agent/scripts/`：验证、dry run、运行摘要和会话状态的内部工具。
-- `openevolve-coding-agent/references/`：项目格式和故障排查参考。
+- `openevolve-experiment-workflow/SKILL.md`：goal-driven AI4Math-Evolving 交互协议。
+- `openevolve-experiment-workflow/scripts/`：验证、dry run、运行摘要和会话状态的内部工具。
+- `openevolve-experiment-workflow/references/`：项目格式和故障排查参考。
 - `examples/`：仓库级可运行示例，包含理解和复现实验所需的主要项目文件。
 
 ## 本地检查
@@ -106,7 +106,7 @@ Use this repository's AI4Math-Evolving workflow.
 这些脚本主要给 agent 使用，但也可以直接检查仓库：
 
 ```bash
-python3 openevolve-coding-agent/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json init
-python3 openevolve-coding-agent/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json next
+python3 openevolve-experiment-workflow/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json init
+python3 openevolve-experiment-workflow/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json next
 python3 -m unittest discover -s tests -v
 ```

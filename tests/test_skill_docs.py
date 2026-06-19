@@ -4,12 +4,12 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = ROOT / "openevolve-coding-agent" / "SKILL.md"
+SKILL = ROOT / "openevolve-experiment-workflow" / "SKILL.md"
 README = ROOT / "README.md"
 README_ZH = ROOT / "README.zh-CN.md"
 PYPROJECT = ROOT / "pyproject.toml"
-AGENT_META = ROOT / "openevolve-coding-agent" / "agents" / "openai.yaml"
-REFERENCE_DIR = ROOT / "openevolve-coding-agent" / "references"
+AGENT_META = ROOT / "openevolve-experiment-workflow" / "agents" / "openai.yaml"
+REFERENCE_DIR = ROOT / "openevolve-experiment-workflow" / "references"
 EXAMPLE_DIR = ROOT / "examples" / "admm-adaptive-rho-session"
 
 
@@ -154,8 +154,8 @@ class SkillDocsTests(unittest.TestCase):
         readme_zh = self.read(README_ZH)
         self.assertIn(token, readme.lower())
         self.assertIn(token, readme_zh.lower())
-        self.assertIn("openevolve-coding-agent/SKILL.md", readme)
-        self.assertIn("openevolve-coding-agent/SKILL.md", readme_zh)
+        self.assertIn("openevolve-experiment-workflow/SKILL.md", readme)
+        self.assertIn("openevolve-experiment-workflow/SKILL.md", readme_zh)
         for path in (SKILL, AGENT_META):
             self.assertNotIn(token, self.read(path).lower(), str(path))
         self.assertFalse((REFERENCE_DIR / f"{token}-adapter.md").exists())
@@ -179,7 +179,7 @@ class SkillDocsTests(unittest.TestCase):
         self.assertIn("`examples/`: repository-level runnable examples", readme)
         self.assertIn("`examples/`：仓库级可运行示例", readme_zh)
         self.assertTrue((EXAMPLE_DIR / "README.md").is_file())
-        self.assertFalse((ROOT / "openevolve-coding-agent" / "examples").exists())
+        self.assertFalse((ROOT / "openevolve-experiment-workflow" / "examples").exists())
 
         required_project_files = [
             "project/initial_program.py",

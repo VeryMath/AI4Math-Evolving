@@ -1,9 +1,9 @@
 ---
-name: openevolve-coding-agent
+name: openevolve-experiment-workflow
 description: Use when a coding agent is asked to pursue an interactive AI4Math-Evolving/OpenEvolve goal involving initial_program.py, evaluator.py, config.yaml, metrics, logs, checkpoints, best-program artifacts, or iterative user feedback.
 ---
 
-# AI4Math-Evolving Coding Agent
+# OpenEvolve Experiment Workflow
 
 ## Overview
 
@@ -92,7 +92,7 @@ When a new workspace is useful and the user did not choose a location, use the v
 
 Best-program artifacts, improved metrics, and evaluator wins are search
 evidence, not proof. If an evolved result creates a theorem claim or proof
-obligation, route it to `agentic-rethlas-proving` or `AI4Math-Lean-Agents`.
+obligation, route it to `rethlas-proving` or `lean-formalization`.
 
 ## Tool Primitives
 

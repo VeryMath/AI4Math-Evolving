@@ -1,8 +1,8 @@
-# AI4Math-Evolving Skill
+# OpenEvolve Experiment Workflow
 
 Chinese guide: [README.zh-CN.md](README.zh-CN.md)
 
-`openevolve-coding-agent` is a coding-agent skill for interactive AI4Math/OpenEvolve experiment sessions. It is meant to be installed and operated by a coding agent: the agent reads the project, sets up the runnable environment, asks only decision-changing questions, runs small probes before expensive searches, and keeps API keys out of files.
+`openevolve-experiment-workflow` is a coding-agent skill for interactive AI4Math/OpenEvolve experiment sessions. It is meant to be installed and operated by a coding agent: the agent reads the project, sets up the runnable environment, asks only decision-changing questions, runs small probes before expensive searches, and keeps API keys out of files.
 
 ## AI4Math Role
 
@@ -15,13 +15,13 @@ artifact to improve.
 ## Handoff
 
 Typical upstream inputs come from `paper-to-skill`, `discover-math-problems`,
-`agentic-rethlas-proving`, optimization Skills, or computational reproduction
+`rethlas-proving`, optimization Skills, or computational reproduction
 runs. Handoff artifacts should name the target metric, budget, evaluator,
 starter files, and acceptance threshold. Return best-program artifacts, logs,
 metrics, and next-iteration recommendations to the originating skill.
 Best-program artifacts and improved metrics are search evidence, not proof. If
 an evolved result suggests a theorem or proof obligation, route it to
-`agentic-rethlas-proving` or `AI4Math-Lean-Agents`.
+`rethlas-proving` or `lean-formalization`.
 
 ## Installation / Loading
 
@@ -30,20 +30,20 @@ Use the repository checkout first. Ask your coding agent to read:
 ```text
 AGENTS.md
 SKILL.md
-openevolve-coding-agent/SKILL.md
+openevolve-experiment-workflow/SKILL.md
 ```
 
 If your agent supports local Skill discovery, install or link
-`openevolve-coding-agent/` into that agent's Skill path and reload the agent if
+`openevolve-experiment-workflow/` into that agent's Skill path and reload the agent if
 needed. Platform-specific notes live in `CLAUDE.md`, `GEMINI.md`,
 `.codex/INSTALL.md`, and `.opencode/INSTALL.md`.
 
 To install from a remote repository, give your coding agent this prompt:
 
 ```text
-Install the `openevolve-coding-agent` skill from https://github.com/VeryMath/AI4Math-Evolving into the coding agent environment I am using.
+Install the `openevolve-experiment-workflow` skill from https://github.com/VeryMath/AI4Math-Evolving into the coding agent environment I am using.
 
-Please detect the target agent and its skill/config location, preserve existing configuration, install or link only what is needed, keep API keys out of files, verify that `openevolve-coding-agent/SKILL.md` is discoverable, and tell me whether I need to restart the target agent.
+Please detect the target agent and its skill/config location, preserve existing configuration, install or link only what is needed, keep API keys out of files, verify that `openevolve-experiment-workflow/SKILL.md` is discoverable, and tell me whether I need to restart the target agent.
 ```
 
 The installing agent should own the mechanics. If the target is OpenCode or another skill-aware agent, it should use that agent's native skill discovery path and verification command instead of asking you to edit config by hand.
@@ -51,12 +51,12 @@ The installing agent should own the mechanics. If the target is OpenCode or anot
 ## Quick Start
 
 ```text
-Use this repository's AI4Math-Evolving workflow.
+Use this repository's OpenEvolve experiment workflow.
 
 Read:
 - AGENTS.md
 - SKILL.md
-- openevolve-coding-agent/SKILL.md
+- openevolve-experiment-workflow/SKILL.md
 
 Goal:
 <describe the optimization problem, algorithm idea, benchmark, or research objective>
@@ -108,9 +108,9 @@ The skill should inspect nonstandard projects before forcing this shape.
 
 ## Repository Layout
 
-- `openevolve-coding-agent/SKILL.md`: the interaction contract for goal-driven AI4Math-Evolving sessions.
-- `openevolve-coding-agent/scripts/`: internal helper scripts for validation, dry runs, run summaries, and session state.
-- `openevolve-coding-agent/references/`: focused references for project format and troubleshooting.
+- `openevolve-experiment-workflow/SKILL.md`: the interaction contract for goal-driven AI4Math-Evolving sessions.
+- `openevolve-experiment-workflow/scripts/`: internal helper scripts for validation, dry runs, run summaries, and session state.
+- `openevolve-experiment-workflow/references/`: focused references for project format and troubleshooting.
 - `examples/`: repository-level runnable examples, including the main project files needed to understand and rerun each case.
 
 ## Smoke Check
@@ -118,7 +118,7 @@ The skill should inspect nonstandard projects before forcing this shape.
 The scripts are internal helpers for agents, but the repository can be checked directly:
 
 ```bash
-python3 openevolve-coding-agent/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json init
-python3 openevolve-coding-agent/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json next
+python3 openevolve-experiment-workflow/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json init
+python3 openevolve-experiment-workflow/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json next
 python3 -m unittest discover -s tests -v
 ```

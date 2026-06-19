@@ -4,7 +4,7 @@ This repository is an AI4Math Skill adapter package for interactive
 OpenEvolve experiment sessions. The shared Skill layer is:
 
 ```text
-openevolve-coding-agent/SKILL.md
+openevolve-experiment-workflow/SKILL.md
 ```
 
 ## Contract

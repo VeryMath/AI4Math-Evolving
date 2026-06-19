@@ -3,7 +3,7 @@
 This repository exposes a shared Skill layer at:
 
 ```text
-openevolve-coding-agent/SKILL.md
+openevolve-experiment-workflow/SKILL.md
 ```
 
 OpenCode can use the repository checkout directly by reading `AGENTS.md`,

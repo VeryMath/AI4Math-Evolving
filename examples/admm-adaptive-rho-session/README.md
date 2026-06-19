@@ -4,7 +4,7 @@ This repository example shows a concrete pattern for guiding an open-ended mathe
 
 ## Scenario
 
-The user starts in an empty temporary workspace and activates `openevolve-coding-agent`.
+The user starts in an empty temporary workspace and activates `openevolve-experiment-workflow`.
 
 User intent:
 
