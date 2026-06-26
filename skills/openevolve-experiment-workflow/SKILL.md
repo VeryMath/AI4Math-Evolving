@@ -92,7 +92,7 @@ When a new workspace is useful and the user did not choose a location, use the v
 
 Best-program artifacts, improved metrics, and evaluator wins are search
 evidence, not proof. If an evolved result creates a theorem claim or proof
-obligation, route it to `rethlas-proving` or `lean-formalization`.
+obligation, route it to `proof-blueprint-review` or `lean-formalization`.
 
 ## Tool Primitives
 
