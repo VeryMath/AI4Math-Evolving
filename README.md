@@ -9,7 +9,7 @@ Skill packages live under `skills/<skill-name>/`.
 
 | Package | Purpose | Status |
 | --- | --- | --- |
-| `skills/` | Reserved for normalized evolving-agent skill packages. | Ready for imports |
+| `skills/openevolve-experiment-workflow/` | Goal-driven OpenEvolve experiment sessions, validation, and run summaries. | `README.md`, `SKILL.md` |
 
 ## Usage
 

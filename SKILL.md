@@ -11,6 +11,12 @@ Concrete skills belong under `skills/<skill-name>/`. Before running a concrete
 workflow, open that package and follow its package-local `SKILL.md`, README,
 scripts, and references.
 
+## Packages
+
+- `skills/openevolve-experiment-workflow/`: inspect or create an OpenEvolve
+  project, validate runtime configuration, run bounded probes, summarize
+  metrics, and guide iterative improvement sessions.
+
 ## Repository Boundary
 
 - Keep root documentation concise and focused on routing.
