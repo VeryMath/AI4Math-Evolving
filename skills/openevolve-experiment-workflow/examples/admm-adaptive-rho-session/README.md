@@ -32,6 +32,7 @@ This example includes the main project files created during the session:
 | `project/config.yaml` | Small-run OpenEvolve config using `${LLM_API_KEY}` instead of a plaintext key. |
 | `project/tests/test_evaluator_contract.py` | Contract tests for project shape, metrics, and bad-strategy penalties. |
 | `project/README.md` | Commands for validating and running this sample project. |
+| `slides/admm-rho-evolve-ppt.pptx` | Presentation deck explaining the ADMM adaptive-rho OpenEvolve workflow and result story. |
 
 Generated `runs/` artifacts are intentionally not included. The metrics below are copied from the original run summary.
 

@@ -1,6 +1,7 @@
 from pathlib import Path
 import re
 import unittest
+import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,6 +18,16 @@ EXAMPLE_DIR = SKILL_ROOT / "examples" / "admm-adaptive-rho-session"
 class SkillDocsTests(unittest.TestCase):
     def read(self, path: Path) -> str:
         return path.read_text(encoding="utf-8")
+
+    def read_example_file_for_scan(self, path: Path) -> str:
+        if path.suffix == ".pptx":
+            chunks = []
+            with zipfile.ZipFile(path) as deck:
+                for name in deck.namelist():
+                    if name.endswith((".xml", ".rels")):
+                        chunks.append(deck.read(name).decode("utf-8", errors="ignore"))
+            return "\n".join(chunks)
+        return self.read(path)
 
     def frontmatter_description(self) -> str:
         text = self.read(SKILL)
@@ -188,6 +199,7 @@ class SkillDocsTests(unittest.TestCase):
             "project/config.yaml",
             "project/tests/test_evaluator_contract.py",
             "project/README.md",
+            "slides/admm-rho-evolve-ppt.pptx",
         ]
         for rel_path in required_project_files:
             self.assertTrue((EXAMPLE_DIR / rel_path).is_file(), rel_path)
@@ -196,7 +208,7 @@ class SkillDocsTests(unittest.TestCase):
         local_workspace_path = "/".join(["", "Users", "conanxu", "Desktop", "AI4Math-Evolving"])
         for path in EXAMPLE_DIR.rglob("*"):
             if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc":
-                text = self.read(path)
+                text = self.read_example_file_for_scan(path)
                 self.assertNotRegex(text, r"sk-[A-Za-z0-9]{8,}")
                 self.assertNotIn(local_workspace_path, text)
         self.assertIn('${LLM_API_KEY}', self.read(EXAMPLE_DIR / "project" / "config.yaml"))
