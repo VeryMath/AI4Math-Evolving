@@ -12,6 +12,11 @@
 
 </div>
 
+<p align="center">
+  如果这个项目对你有帮助，欢迎为仓库点 Star ⭐
+  <a href="https://github.com/VeryMath/AI4Math-Evolving"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/VeryMath/AI4Math-Evolving?style=social"></a>
+</p>
+
 ## 这个仓库是什么
 
 这个仓库是 AI4Math 演化式 agent workflow 的技能入口。目前重点是有边界的 OpenEvolve 实验会话：环境就绪检查、项目检查、短 probe、指标复盘和下一轮迭代建议。
