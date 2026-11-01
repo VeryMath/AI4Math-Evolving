@@ -13,9 +13,9 @@ scripts, and references.
 
 ## Packages
 
-- `skills/openevolve-experiment-workflow/`: inspect or create an OpenEvolve
-  project, validate runtime configuration, run bounded probes, summarize
-  metrics, and guide iterative improvement sessions.
+- `skills/openevolve-experiment-workflow/`: evolve algorithms, proof
+  candidates, and counterexamples through candidate changes, evaluation,
+  mathematical verification, and failure feedback; use OpenEvolve when configured.
 
 ## Repository Boundary
 

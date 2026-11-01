@@ -7,7 +7,7 @@ evaluation loops, and skill refinement.
 
 [中文说明](README.zh-CN.md) · [Contributors](CONTRIBUTORS.md) · [Skill packages](#skill-packages) · [Installation](#installation) · [Quick start](#quick-start) · [Security model](#security-and-scope)
 
-![version](https://img.shields.io/badge/version-0.1.0-blue)
+![version](https://img.shields.io/badge/version-0.2.0-blue)
 ![skills](https://img.shields.io/badge/skills-1-2ea44f)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -22,7 +22,7 @@ evaluation loops, and skill refinement.
 
 This repository is the AI4Math home for evolving-agent workflows. It currently
 focuses on bounded OpenEvolve experiment sessions: environment readiness,
-project inspection, short probes, metric review, and next-step iteration.
+algorithm, proof-candidate, and counterexample evolution with mathematical verification and failure feedback.
 
 Use the root page as the public map, then open the package for the concrete
 workflow.
@@ -31,7 +31,7 @@ workflow.
 
 | Package | Use it for | Start here |
 | --- | --- | --- |
-| [`openevolve-experiment-workflow`](skills/openevolve-experiment-workflow/) | Inspect or create OpenEvolve projects, validate runtime configuration, run bounded probes, summarize metrics, and guide iterative improvement. | [`README`](skills/openevolve-experiment-workflow/README.md) · [`SKILL`](skills/openevolve-experiment-workflow/SKILL.md) |
+| [`openevolve-experiment-workflow`](skills/openevolve-experiment-workflow/) | Evolve algorithms, proof candidates, and counterexamples; evaluate each change and record mathematical verification and failures. | [`README`](skills/openevolve-experiment-workflow/README.md) · [`SKILL`](skills/openevolve-experiment-workflow/SKILL.md) |
 
 ## Installation
 
@@ -82,23 +82,29 @@ skills/openevolve-experiment-workflow/SKILL.md
 
 ## Repository Layout
 
-```text
-AI4Math-Evolving/
-├── README.md
-├── README.zh-CN.md
-├── SKILL.md
-└── skills/
-    └── openevolve-experiment-workflow/
-```
+- `README.md` and `README.zh-CN.md`: repository map and installation.
+- `SKILL.md`: route tasks to the package.
+- `skills/openevolve-experiment-workflow/`: workflow, examples, and references.
+- `tests/`: script behavior, metadata, links, and mathematical verification.
 
 Experiment logs, checkpoints, provider settings, and generated outputs belong in
 task-local output directories, not in the public root.
 
 ## Validation
 
-There is no root build step. When changing the package, validate its `SKILL.md`,
-README links, scripts, and references. If you use Codex's local skill validator,
-run it against `skills/openevolve-experiment-workflow/`.
+Install validation dependencies and run the checks from the repository root:
+
+```bash
+python -m pip install '.[test]'
+mkdir -p .verification/temporary
+TMPDIR="$PWD/.verification/temporary" python -m pytest -q
+python skills/openevolve-experiment-workflow/examples/mathematical_evolution.py --case all --rounds 10 --output .verification/mathematical-evolution.json
+```
+
+The [real-model examples](skills/openevolve-experiment-workflow/examples/model_candidates/README.md)
+use JSON candidates with fixed evaluators. A verified `ecnu-max` run is recorded in
+[model validation](skills/openevolve-experiment-workflow/references/model-validation.md).
+CI runs local mathematical checks without provider credentials.
 
 ## Security and Scope
 

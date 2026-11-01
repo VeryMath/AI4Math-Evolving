@@ -1,98 +1,58 @@
-# OpenEvolve Experiment Workflow
+# Mathematical Candidate Evolution with OpenEvolve
 
-Chinese guide: [README.zh-CN.md](README.zh-CN.md)
+中文说明：[README.zh-CN.md](README.zh-CN.md)
 
-`openevolve-experiment-workflow` helps a coding agent run controlled OpenEvolve experiment sessions for code or prompt search.
+Evolve mathematical **Candidates** through changes, evaluation, mathematical checks, and failure feedback. Candidates include algorithms, proof arguments, counterexamples, conjectures, and constructions; code and prompts are possible representations.
 
-## When To Use It
+The skill first checks whether the object can be represented, legally changed, meaningfully compared, and mathematically verified. Each round records its parent, proposed change, object, metrics, mathematical status, and feedback. An improved search score and a valid mathematical conclusion are reported separately.
 
-Use this skill when you have:
-
-- code or prompts that can be scored by a metric;
-- an existing OpenEvolve project that needs inspection, repair, or a bounded run;
-- a research goal that can be turned into a starter project and evaluator;
-- API or runtime risk that should be checked before expensive search.
-
-## What It Produces
-
-The agent should produce workspace state, dry-run plans, short-probe logs, metrics, checkpoints, best-program artifacts, and next-step recommendations.
-
-## Installation
-
-Copy this to your coding agent:
+## Start a task
 
 ```text
-Please install the `openevolve-experiment-workflow` skill from https://github.com/VeryMath/AI4Math-Evolving.git. Read the package `SKILL.md`, install the declared Skill entrypoint, verify that `$openevolve-experiment-workflow` is discoverable, and tell me whether I need to restart the agent.
+Use $openevolve-experiment-workflow.
+My goal is: <algorithm / proof / counterexample / construction>.
+Inspect the existing project, define the Candidate and legal changes, evaluate
+its initial form, and perform repeated refinements within <budget>.
+Record failed proposals and verify the selected mathematical object.
 ```
 
-If you already have this skill repository locally, replace the repository URL
-with the local folder path. The coding agent should handle cloning, linking,
-configuration, reload/restart checks, and verification.
+Use direct mathematical search, agent-guided refinement, or an actual OpenEvolve model run as appropriate. State which backend generated the proposals. Configure OpenEvolve and provider access when a model run needs them; continue already authorized work within the agreed budget. Keys belong in environment variables.
 
-## Quick Start
+## Run three mathematical examples
 
-Give the goal to your coding agent:
-
-```text
-Use this repository's OpenEvolve experiment workflow.
-
-My goal is: <describe the optimization problem, algorithm idea, benchmark, or research objective>.
-
-Inspect the workspace first, configure a runnable OpenEvolve environment, keep the first run small, and ask before any long or expensive search.
-```
-
-For an existing OpenEvolve project, also give the project path and the metric or behavior you care about. For a new project, just describe the target; the coding agent should create or select the workspace and starter project.
-
-## How To Interact
-
-Use a checkpoint loop:
-
-```text
-goal -> workspace inspection -> dry-run plan -> approve / revise / reject / skip
-     -> approved probe -> evidence summary -> next checkpoint
-```
-
-Use `approve` to run a proposed step, `revise` to update the plan, `reject` to
-stop the path, and `skip` to move past a phase. The agent should ask before API
-spend, long runs, source edits, dependency changes, or final claims.
-
-## What The Coding Agent Should Do
-
-During a session, the agent should:
-
-- inspect the workspace before asking project questions;
-- check Python, the `openevolve` package, `openevolve-run`, API environment variables, model, and base URL;
-- create or select a visible workspace, defaulting to `~/Desktop/AI4Math-Evolving` when no better path is known;
-- inspect or create `initial_program.py`, `evaluator.py`, and `config.yaml`;
-- validate the project and repair only directly relevant issues;
-- build a dry-run command before spending API budget;
-- run a short probe before a longer evolution search;
-- inspect logs, metrics, checkpoints, and best-program artifacts;
-- summarize what changed and propose the next concrete step.
-
-## Project Contract
-
-An OpenEvolve project usually contains:
-
-- `initial_program.py` with `EVOLVE-BLOCK-START` and `EVOLVE-BLOCK-END`;
-- `evaluator.py` with `evaluate(program_path)`;
-- `config.yaml`, `config.yml`, or `config_default.yaml` with `max_iterations` and `checkpoint_interval`.
-
-The skill should inspect nonstandard projects before forcing this shape.
-
-## Repository Layout
-
-- `skills/openevolve-experiment-workflow/SKILL.md`: the interaction contract for goal-driven AI4Math-Evolving sessions.
-- `skills/openevolve-experiment-workflow/scripts/`: internal helper scripts for validation, dry runs, run summaries, and session state.
-- `skills/openevolve-experiment-workflow/references/`: focused references for project format and troubleshooting.
-- `examples/`: package-level runnable examples, including the main project files needed to understand and rerun each case.
-
-## Smoke Check
-
-The scripts are internal helpers for agents, but the repository can be checked directly:
+From this package directory, with Python 3.9 or later:
 
 ```bash
-python3 skills/openevolve-experiment-workflow/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json init
-python3 skills/openevolve-experiment-workflow/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json next
-python3 -m unittest discover -s tests -v
+python3 examples/mathematical_evolution.py --case all --rounds 10 --output .verification/mathematical-evolution.json
+```
+
+Only Python's standard library is needed. Use `--case algorithm`, `proof`, or `counterexample` to run one example. The output file contains every computed proposal and its evaluation, selection, failure feedback, and `feedback_used` describing which observation produced the change.
+
+Each case and the overall output include `target_reached`. The algorithm must improve over its baseline with a valid spectral check; the proof must establish the exact identity; the graph must verify a counterexample. The command exits `0` only when all selected targets are reached. If the budget ends or progress stops before that, it prints the full partial results, also saves them when `--output` is given, and exits `1`; for example, `--case proof --rounds 1` leaves an unproved candidate. CI therefore checks the actual mathematical targets.
+
+| Example | Actual multi-round result, verified on 2026-11-01 | Mathematical evidence |
+| --- | --- | --- |
+| Gradient step on two quadratic objectives | Five improving rounds: step `1/64` → `25/128` | Exact rational iterations; spectral contraction bound `103/128` for the stated quadratic class |
+| Quartic inequality proof candidate | Eight improving rounds: identity error `4` → `0`, square weights `(1/4,3/4)` | Exact polynomial identity and nonnegative squares for all real inputs |
+| Graph counterexample | Five improving rounds: `10` → `5` edges, Hamiltonian cycles `12` → `0` | Connected graph with `m=n=5`; exhaustive cycle enumeration plus a degree-one witness |
+
+The next proposals consume evaluator observations: an unstable step triggers a smaller refinement, unmatched polynomial coefficients determine a coefficient's direction, and a disconnected graph proposal prevents repeating that edge removal. Undirected edges are normalized; duplicate edges, self-loops, and invalid endpoints are rejected with a reason.
+
+The program generates and evaluates its proposals during execution. These are deterministic mathematical searches, with no model or OpenEvolve invocation. The square basis and feedback rules are supplied; the examples do not establish model ability, global optimality, or new research results. See [worked cases and limits](references/mathematical-candidates.md).
+
+## OpenEvolve projects
+
+The [model example](examples/model_candidates/README.md) uses OpenEvolve 0.4.0 to generate JSON Candidates and fixed evaluators to inspect their mathematics without executing generated code. It processes one proposal at a time and includes evaluated proposals and mathematical feedback in later prompts. A real `ecnu-max` run on 2026-11-01 made seven calls and reached all three mathematical targets: step `1/10`, exact weights `(1/4,3/4)`, and a connected five-vertex, six-edge counterexample. SymPy and NetworkX independently checked these results. See [model validation and limits](references/model-validation.md).
+
+Existing code-backed projects can retain `initial_program.py`, `evaluator.py`, and their installed configuration format. Keep hypotheses and mathematical checks fixed during comparisons. Read [project format](references/project-format.md) and [troubleshooting](references/troubleshooting.md).
+
+The primary workflow is [SKILL.md](SKILL.md); the agent entry point is [agents/openai.yaml](agents/openai.yaml). Existing helper scripts and the [historical ADMM session](examples/admm-adaptive-rho-session/README.md) remain available for earlier projects. Historical metrics do not establish a new run.
+
+## Install
+
+```text
+Install the openevolve-experiment-workflow skill from
+https://github.com/VeryMath/AI4Math-Evolving.git.
+Read its SKILL.md and install the complete package with its references and examples.
+Verify that $openevolve-experiment-workflow is discoverable.
 ```

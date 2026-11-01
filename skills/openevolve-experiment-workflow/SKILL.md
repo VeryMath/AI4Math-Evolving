@@ -1,136 +1,79 @@
 ---
 name: openevolve-experiment-workflow
-description: Use when a coding agent is asked to pursue an interactive AI4Math-Evolving/OpenEvolve goal involving initial_program.py, evaluator.py, config.yaml, metrics, logs, checkpoints, best-program artifacts, or iterative user feedback.
+description: Use when evolving AI4Math mathematical Candidates such as algorithms, proof candidates, counterexamples, conjectures, or constructions through mutation/refinement, an evaluator, mathematical verification, and recorded failure feedback; also use for bounded OpenEvolve code or prompt search.
 ---
 
 # OpenEvolve Experiment Workflow
 
-## Overview
+Turn a mathematical goal into a repeated search over explicit **Candidates**. A Candidate can be an algorithm, proof argument, graph, inequality, conjecture, or other mathematical object; code and prompts are possible representations. Keep the mathematical statement, evaluator, and editable object distinct.
 
-Turn a user's evolving goal into an agent-led OpenEvolve session. The user should experience a collaborative coding agent that understands intent, asks only necessary questions, edits project files when useful, runs experiments, observes results, and proposes the next move.
+Reply in Chinese by default. Inspect the user's current project and existing results before asking questions. Continue within the agreed scope and budget; ask only for information that changes the work.
 
-Use the bundled scripts as private tool primitives. Do not present the skill as a command menu unless the user explicitly asks for commands.
+## 1. Check whether the object can evolve
 
-## Interaction Contract
+Before selecting a search tool, establish:
 
-- Start from the user's goal, not from a fixed sequence of commands. Restate the target metric, constraints, budget, and expected artifact when they are clear.
-- Establish the runnable environment before deep project design. Inspect or configure the workspace, Python/OpenEvolve package, `openevolve-run`, provider API variable, model, and base URL before asking domain-shaping questions.
-- Inspect the project before asking project questions. Infer entry points, evaluator shape, config path, current results, and likely blockers from files and logs.
-- Ask the user for feedback only when it changes a decision: objective tradeoffs, runtime budget, model/provider choice, acceptance threshold, or risky code changes.
-- Make the next action explicit before starting a costly run: baseline, repair, short probe, full run, log inspection, result comparison, or stop.
-- After each observation, decide what changed and what should happen next. Prefer "I found X, so I will do Y" over generic status updates.
-- Keep secrets out of artifacts. Provider keys must stay in environment variables or placeholders, never plaintext config, logs, examples, or summaries.
+- **Representation:** write the Candidate in a form that can be inspected and changed, including its mathematical domain and assumptions.
+- **Permitted changes:** specify legal mutations and refinements. For example, change an algorithm's step, add a proof lemma, or remove a graph edge while retaining the conjecture's assumptions.
+- **Evaluation:** define a meaningful objective and compare against an initial Candidate. A partial proof score may guide search but cannot establish a theorem.
+- **Mathematical check:** state what establishes the final claim: exact algebra, a proof, a proof assistant, an exhaustive finite computation, or a verified counterexample. State the scope of numerical evidence.
+- **Feedback:** retain failed Candidates and the concrete failed assumption, coefficient, obligation, input, or evaluator error so the next proposal can address it.
 
-## Capabilities
+If no useful comparison or mathematical check is available, first make that missing piece concrete. Do not force an arbitrary score onto an open research question.
 
-Use the skill to guide these agent-led tasks:
+Record the Candidate's object, editable part, objective, constraints, and run budget in the existing project notes. Load [mathematical-candidates.md](references/mathematical-candidates.md) for worked representations and evidence limits.
 
-- Goal intake: turn a loose optimization or research request into an objective metric, run budget, and expected artifact.
-- First-run onboarding: help a new user move from an open-ended goal to a visible workspace, starter OpenEvolve project, validation result, dry-run command, and small first run.
-- Project readiness: inspect, validate, and minimally repair `initial_program.py`, `evaluator.py`, and config files.
-- Baseline run: start with a short probe or baseline before spending a larger search budget.
-- Evolution search: launch direct OpenEvolve runs, track status, tail logs, stop runs, and preserve output directories.
-- Result analysis: summarize best metrics, best-program artifacts, evaluator failures, and likely reasons a run stalled.
-- Visualization data: extract metric series, checkpoint timelines, best-artifact paths, and log highlights for a UI or report without rendering the UI here.
-- Iteration planning: use user feedback and observed metrics to decide whether to adjust code, evaluator, config, budget, or acceptance criteria.
+## 2. Run the mathematical loop
 
-## User Guidance
+1. Evaluate and mathematically inspect the initial Candidate.
+2. Propose a mutation or refinement, naming its parent and the observation it addresses.
+3. Evaluate the proposed object under the same assumptions, inputs, and objective. Retain evaluator failures as feedback rather than assigning them a favorable score.
+4. Check its mathematical obligations separately from the search score. A syntactically valid proof candidate can still be unproved; a high numerical score can still violate a theorem's hypotheses.
+5. Select a legal improvement, or explain why it was rejected. Preserve informative failures in ordinary run notes or result files.
+6. Use the observed feedback to propose the next change. Continue until the agreed budget, a verified target, or an explained lack of progress.
 
-Reply in Chinese by default unless the user asks for another language or the surrounding project explicitly requires English.
+For every evaluated proposal, record the round, parent, change, object, metrics, mathematical-check result, and feedback. Records may be corrected normally; no special file identity or execution permission system is needed.
 
-Guide the user through one decision at a time. Do not ask the user to choose from a command list; choose the next useful action yourself, explain why it is the right signal, and ask only for the decision that changes that action.
+Before reporting success, re-evaluate the selected object and inspect the strongest available mathematical argument. Report improvement and mathematical validity as separate findings. Route a substantive proof obligation to `proof-blueprint-review` or `lean-formalization` when those skills are available.
 
-When a user gives an open-ended goal, guide them toward one crisp next experiment. Prefer short prompts such as:
+## 3. Choose and state the search backend
 
-- "I can run a short baseline first; what metric should count as success if the evaluator exposes several?"
-- "This may spend API budget. Should I cap the first search to a small probe?"
-- "The best score improved but the logs show evaluator noise. I can inspect the best program or tighten the evaluator next."
+- **Direct mathematical search:** use executable finite search, symbolic computation, or numerical optimization when it suits the Candidate. The bundled examples use deterministic local search and report every evaluated proposal.
+- **Model-generated OpenEvolve search:** use OpenEvolve when the model should propose edits to the Candidate representation. Inspect the installed package/CLI, project, model, endpoint, and API environment variable only when needed for that run. Respect the user's agreed iteration and cost budget.
+- **Agent-guided refinement:** use explicit edits with feedback when the object is not yet suited to automatic generation. Name who or what produced each proposal.
 
-Do not ask for information already present in project files. When the user is unsure, choose conservative defaults, explain the assumption, and keep the first run small.
+Never describe deterministic search, a manual rewrite, a command illustration, or an old result as a newly completed OpenEvolve/model run. Report the actual backend, completed rounds, evaluator failures, selected object, and unresolved checks.
 
-During first-run onboarding, avoid assuming the user already has an OpenEvolve project. First establish the environment snapshot, then create or guide creation of the smallest project that can be validated and dry-run before asking about a longer evolution run.
+## OpenEvolve adapter
 
-Before asking domain-shaping questions, confirm the workspace, Python interpreter, `openevolve` package, `openevolve-run`, provider API variable, model, and base URL. Do not start with a multi-option algorithm or benchmark questionnaire; ask at most one blocking question when the environment or objective cannot be inferred.
+For a code-backed project, keep the editable Candidate in `initial_program.py`, supply `evaluator.py` with `evaluate(program_path)`, and use the installed OpenEvolve configuration format. The evaluator must inspect the mathematical object, keep assumptions fixed, and return numeric metrics; use `combined_score` when the project expects it. Keep detailed failure feedback alongside those metrics using the installed evaluator's supported return format.
 
-If the current location is an empty or temporary workspace and the user did not provide a project path, the default action is to initialize a visible workspace at `~/Desktop/AI4Math-Evolving` and report its absolute path. Do not force a single workspace path: use an existing project path, an explicit user location, or the current directory when it is clearly intended.
+Load [project-format.md](references/project-format.md) before creating or adapting these files. Run the installed CLI directly. Keep provider keys in environment variables, referenced by placeholders such as `${LLM_API_KEY}`. Do not repeat secrets in chat or tracked files.
 
-## Runtime/API Configuration
+For data-shaped Candidates, prefer the [JSON model examples](examples/model_candidates/README.md): they parse generated data without executing generated code. OpenEvolve 0.4.0 accepts `EvaluationResult` with numeric metrics and feedback artifacts. The example fixes the case and graph size in the evaluator, runs one proposal at a time, and passes evaluated proposals and mathematical feedback into the next request. Load [model-validation.md](references/model-validation.md) for actual model results and their scope.
 
-Treat API/provider settings as readiness information, not as a mandatory first gate for every request. Before a real evolution run, inspect the config and environment together:
+Package installation and API setup are needed for a model run; they are not prerequisites for mathematical reasoning or the dependency-free examples below. The historical session helpers remain available for existing projects; the mathematical workflow does not require them.
 
-- If config already has `llm.api_key: "${VAR_NAME}"` and `VAR_NAME` is set in the environment, do not ask for the key again.
-- If config has model and base URL but no `api_key`, propose adding an environment placeholder such as `${LLM_API_KEY}`.
-- If config references `${VAR_NAME}` but the environment variable is missing, ask the user to export it or provide a local env setup. Do not ask them to paste secrets into tracked files.
-- If the user provides API settings in chat, acknowledge receipt without repeating the secret value. Convert the project config to environment-variable placeholders and, if a real key was exposed, recommend rotating it after setup.
-- For ChatECNU-style OpenAI-compatible endpoints, a typical config is `api_base: "https://chat.ecnu.edu.cn/open/api/v1"`, `primary_model: "ecnu-plus"`, and `api_key: "${LLM_API_KEY}"`.
+## Executable mathematical examples
 
-Do not write plaintext API keys into config, examples, logs, summaries, tests, or docs. It is fine to write placeholder names.
-
-## Goal-Directed Environment Setup
-
-For new-user onboarding, establish a runnable environment before project design or domain-shaping questions. The environment snapshot should cover workspace, Python interpreter, `openevolve` package, `openevolve-run`, provider API variable, model, and base URL.
-
-Let the user's goal shape defaults: workspace name, model choice, first-run budget, project complexity, and the smallest useful evaluator. Do not turn readiness into a fixed checklist; once the environment pieces needed for the user's goal are known or configured, move on to the minimal project and dry run.
-
-OpenEvolve is used as a Python package and CLI. Do not describe this as deploying a local service; the local requirement is an installed `openevolve` package exposing `openevolve-run`, plus project files and API configuration. Prefer installing or importing the package and calling the CLI; do not clone or deploy OpenEvolve itself unless the user asks.
-
-For a real evolution run, verify the relevant API key placeholder, model settings, Python availability, `openevolve-run`, and project files. For inspection, repair, dry-run command construction, or scaffolding, check only the pieces needed for that step and explain what can wait.
-
-When a new workspace is useful and the user did not choose a location, use the visible default `~/Desktop/AI4Math-Evolving`. If an existing project path or current workspace is clearly the user's intended project, use it instead of enforcing a location rule.
-
-## Agent Decision Loop
-
-1. **Understand**: identify the evolving goal, objective metric, constraints, and what the user considers success.
-2. **Set Up Environment**: establish or repair the workspace, Python/OpenEvolve CLI, API environment variable, model, and base URL needed for the goal.
-3. **Observe State**: inspect available project files, config hints, and prior artifacts enough to choose a useful next action.
-4. **Prepare Project**: create, validate, or minimally repair project files scoped to the goal.
-5. **Dry Run**: build the OpenEvolve command and confirm paths/config before spending API budget.
-6. **Propose**: choose the smallest useful experiment and explain the expected signal.
-7. **Run**: execute a dry run or real run when the command, budget, and output path are clear.
-8. **Observe**: inspect logs, checkpoints, metrics, and best-program artifacts.
-9. **Adapt**: summarize the result, compare it with the goal, and choose whether to refine code, tune config, rerun, or ask the user.
-
-Best-program artifacts, improved metrics, and evaluator wins are search
-evidence, not proof. If an evolved result creates a theorem claim or proof
-obligation, route it to `proof-blueprint-review` or `lean-formalization`.
-
-## Tool Primitives
-
-Use these scripts behind the scenes when deterministic state, validation, execution, or summarization is useful:
-
-- `scripts/interactive_session.py`: session state, project import/selection, validation, run records, log tails, file reads, summaries, and next-action hints.
-- `scripts/validate_project.py`: direct validation for OpenEvolve project shape and plaintext key checks.
-- `scripts/run_openevolve.py`: direct OpenEvolve execution, including dry-run command construction.
-- `scripts/summarize_run.py`: extraction of best metrics and best-program metadata from an output directory.
-
-Prefer JSON output from scripts so you can reason over structured state. Load command help or script source only when a decision requires exact flags.
-
-For an empty first-run workspace, initialize the visible workspace with:
+Run from this package directory:
 
 ```bash
-python3 scripts/interactive_session.py --workspace ~/Desktop/AI4Math-Evolving --json init
+python3 examples/mathematical_evolution.py --case all --rounds 10 --output .verification/mathematical-evolution.json
 ```
 
-## Project Contract
+This directly executes three multi-round searches:
 
-An OpenEvolve project should contain:
+- **Algorithm:** evolve a gradient step using exact rational iterations on diagonal quadratic objectives and check the spectral contraction condition.
+- **Proof candidate:** refine nonnegative rational square coefficients until exact polynomial expansion proves a quartic inequality for all real inputs.
+- **Counterexample:** remove edges from a five-vertex graph, retain the conjecture's assumptions, enumerate Hamiltonian cycles, and independently inspect a degree-one witness.
 
-- `initial_program.py` with `EVOLVE-BLOCK-START` and `EVOLVE-BLOCK-END`.
-- `evaluator.py` with `evaluate(program_path)`.
-- `config.yaml`, `config.yml`, or `config_default.yaml` with `max_iterations` and `checkpoint_interval`.
+The program uses only Python's standard library. Its next proposals read evaluator feedback: rejected unstable steps guide a midpoint repair, polynomial coefficient mismatches guide proof corrections, and failed graph deletions identify edges to retain. `feedback_used` records the consumed observation. Undirected graph inputs are normalized and invalid simple-graph representations are diagnosed. It computes the trajectory during execution and does not call a model or OpenEvolve. Read [mathematical-candidates.md](references/mathematical-candidates.md) for objectives, verified results, and limits. The older [ADMM session](examples/admm-adaptive-rho-session/README.md) is historical material, not evidence of a new run.
 
-If the project differs from this shape, first inspect the files and decide whether to adapt, repair, or ask the user before forcing the default contract.
+The example reports `target_reached` for each case and overall. It exits `0` only for a legal improving algorithm, an exact proof identity, and a verified graph counterexample, as selected by `--case`. An unmet target exits `1` after writing the full partial result; report that mathematical outcome rather than calling an incomplete search successful.
 
-## Operating Rules
+## Reporting
 
-- Favor short probe runs before long searches unless the user already gave a runtime budget.
-- Treat UI-originated requests and conversational requests the same way: the agent owns interpretation and next-step selection.
-- Do not overwrite user changes. Read current files, patch narrowly, and explain meaningful edits.
-- When validation fails, repair only the files named by the report or directly implicated by inspection.
-- When a run is active, inspect status/logs before starting another run.
-- When results are available, report the best metric, artifact path, and one concrete recommendation.
+Give the selected Candidate and its location, baseline comparison, actual search backend and rounds, mathematical verification and scope, and the most useful remaining step. Say when a result is a numerical observation, exact finite check, algebraic proof, or proof-assistant result. Improved metrics alone do not establish correctness or a new research result.
 
-## References
-
-- Read `references/project-format.md` when creating or repairing project files.
-- Read `references/troubleshooting.md` when validation, execution, metrics, or artifact discovery fail.
+Read [troubleshooting.md](references/troubleshooting.md) when execution, evaluation, or Candidate interpretation fails.

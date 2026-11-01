@@ -1,0 +1,30 @@
+name: Mathematical evolution
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  mathematical-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install validation dependencies
+        run: python -m pip install '.[test]'
+      - name: Run package validation and mathematical checks
+        env:
+          TMPDIR: ${{ github.workspace }}/.verification/temporary
+        run: |
+          mkdir -p "$TMPDIR"
+          python -m pytest -q
+      - name: Run the three mathematical searches
+        run: >-
+          python skills/openevolve-experiment-workflow/examples/mathematical_evolution.py
+          --case all --rounds 10
+          --output .verification/mathematical-evolution.json

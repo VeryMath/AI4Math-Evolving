@@ -1,95 +1,57 @@
-# OpenEvolve Experiment Workflow
+# 用 OpenEvolve 演化数学候选对象
 
 English guide: [README.md](README.md)
 
-`openevolve-experiment-workflow` 帮助 coding agent 运行受控的 OpenEvolve 代码或 prompt 搜索实验。
+围绕数学**候选对象（Candidate）**，反复执行修改、评价、数学检查和失败反馈。候选对象可以是算法、证明思路、反例、猜想或构造；代码和 prompt 是表达这些对象的方式。
 
-## 适合什么任务
+Skill 先检查对象能否明确表示、合法修改、有意义地比较，以及能否验证数学结论。每轮记录父候选、修改、具体对象、指标、数学状态和反馈。搜索指标变好与数学结论成立分别报告。
 
-当你有这些输入或需求时使用：
+## 开始一个任务
 
-- 可以用 metric 打分的代码或 prompt；
-- 需要检查、修复或有边界运行的已有 OpenEvolve project；
-- 可以被整理成 starter project 和 evaluator 的研究目标；
-- 在昂贵搜索前需要先检查 API、runtime 和预算风险。
+```text
+使用 $openevolve-experiment-workflow。
+我的目标是：<算法 / 证明 / 反例 / 构造>。
+先检查现有项目，明确候选对象和合法修改，评价初始对象，
+在 <预算> 内进行多轮改进。记录失败候选，并验证选中的数学对象。
+```
 
-## 会产出什么
+按任务选择直接数学搜索、Agent 引导修改或真实 OpenEvolve 模型运行，并明确候选由谁生成。需要模型运行时再配置 OpenEvolve 和 API；在已约定的范围与预算内继续执行。密钥保存在环境变量中。
 
-Agent 应产出 workspace state、dry-run plans、short-probe logs、metrics、checkpoints、best-program artifacts 和 next-step recommendations。
+## 运行三个数学案例
+
+在本包目录运行，要求 Python 3.9 或更新版本：
+
+```bash
+python3 examples/mathematical_evolution.py --case all --rounds 10 --output .verification/mathematical-evolution.json
+```
+
+只依赖 Python 标准库。用 `--case algorithm`、`proof` 或 `counterexample` 单独运行一个案例。输出文件包含实际计算的每个候选及其评价、选择结果、失败反馈，以及说明本次修改使用了哪项观察的 `feedback_used`。
+
+每个案例和总体输出都有 `target_reached`：算法必须在谱检查合法的同时优于基线；证明必须得到精确恒等式；图必须验证反例。只有全部选定目标达成才退出 `0`。预算耗尽或停止改进时若仍未达标，程序打印完整的部分结果，指定 `--output` 时也保存到文件，然后退出 `1`；例如 `--case proof --rounds 1` 会保留未证明的候选。因此 CI 检查的是实际数学目标。
+
+| 案例 | 2026-11-01 复核的多轮运行结果 | 数学依据 |
+| --- | --- | --- |
+| 两个二次目标上的梯度步长 | 5 轮改进：步长 `1/64` → `25/128` | 精确有理数迭代；在声明的二次函数范围内，谱收缩界为 `103/128` |
+| 四次不等式的证明候选 | 8 轮改进：恒等式误差 `4` → `0`，平方项权重为 `(1/4,3/4)` | 精确多项式恒等式与非负平方项，对所有实数输入成立 |
+| 图论反例 | 5 轮改进：边数 `10` → `5`，Hamilton 回路数 `12` → `0` | 连通图且 `m=n=5`；穷举回路，并由度为 1 的顶点独立说明反例成立 |
+
+后续修改实际读取评价反馈：不稳定步长会触发更小的改进，未匹配的多项式系数决定修改方向，断连失败会阻止再次删除相同边。程序统一无向边的端点顺序，并明确拒绝重复边、自环和非法端点。
+
+程序在运行时生成并评价候选。这些是确定性数学搜索，没有调用模型或 OpenEvolve。平方项基底与反馈规则由案例提供；结果不能说明模型能力、全局最优性或研究创新。详见[案例与边界](references/mathematical-candidates.md)。
+
+## OpenEvolve 项目
+
+[模型案例](examples/model_candidates/README.md)使用 OpenEvolve 0.4.0 生成 JSON 候选，由固定评估器检查数学内容，评估过程不执行生成的代码。每次完成一个候选的评估后，将已评价候选及其数学反馈传入后续 prompt。2026-11-01 的真实 `ecnu-max` 运行共调用七次，三个数学目标均满足：步长 `1/10`、精确权重 `(1/4,3/4)`，以及五个顶点、六条边的连通图反例。SymPy 和 NetworkX 独立复核了结果。参阅[模型验证及范围](references/model-validation.md)。
+
+已有代码项目可以继续使用 `initial_program.py`、`evaluator.py` 和当前配置格式。比较候选时保持假设和数学检查不变。参阅[项目格式](references/project-format.md)与[故障处理](references/troubleshooting.md)。
+
+主要工作流在 [SKILL.md](SKILL.md)，Agent 入口在 [agents/openai.yaml](agents/openai.yaml)。既有辅助脚本与[历史 ADMM 会话](examples/admm-adaptive-rho-session/README.md)供原有项目继续使用。历史指标不能作为新运行的证据。
 
 ## 安装
 
-把下面这句话发给你的 coding agent：
-
 ```text
-请帮我安装 `openevolve-experiment-workflow` skill，链接是：https://github.com/VeryMath/AI4Math-Evolving.git。请读取包内 `SKILL.md`，安装其中声明的 Skill entrypoint，验证 `$openevolve-experiment-workflow` 可用，并告诉我是否需要重启 agent。
-```
-
-如果你已经有这个 skill 仓库的本地文件夹，把链接换成本地路径即可。clone、link、配置、reload/restart 检查和验证都交给 coding agent 处理。
-
-## 快速开始
-
-把目标交给 coding agent：
-
-```text
-Use this repository's OpenEvolve experiment workflow.
-
-我的目标是：<描述优化问题、算法想法、benchmark 或研究目标>。
-
-请先检查工作区，配置可运行的 OpenEvolve 环境，第一次运行保持小规模；任何长时间或高成本运行前先问我。
-```
-
-如果已有 OpenEvolve 项目，同时给出项目路径和你关心的指标或行为。如果还没有项目，只描述目标即可；coding agent 应该自己创建或选择工作区和 starter project。
-
-## 如何交互使用
-
-推荐使用 checkpoint 循环：
-
-```text
-目标 -> 工作区检查 -> dry-run 计划 -> approve / revise / reject / skip
-     -> 获批 probe -> 证据总结 -> 下一轮 checkpoint
-```
-
-`approve` 表示执行下一步，`revise` 表示先改计划，`reject` 表示停止当前路线，
-`skip` 表示跳过当前阶段。长时间运行、API 预算、依赖变化、源码修改和最终结论前都应先问用户。
-
-## Coding Agent 应该做什么
-
-一次会话中，agent 应该：
-
-- 先检查工作区，再问项目问题；
-- 检查 Python、`openevolve` package、`openevolve-run`、API 环境变量、model 和 base URL；
-- 创建或选择可见工作区，在没有更好路径时默认使用 `~/Desktop/AI4Math-Evolving`；
-- 检查或创建 `initial_program.py`、`evaluator.py` 和 `config.yaml`；
-- 验证项目，只修复直接相关的问题；
-- 在花费 API 预算前先构造 dry-run 命令；
-- 先跑 short probe，再决定是否做 longer evolution search；
-- 检查日志、metrics、checkpoints 和 best-program artifacts；
-- 总结发生了什么变化，并提出下一个具体动作。
-
-## OpenEvolve 项目约定
-
-一个 OpenEvolve 项目通常包含：
-
-- `initial_program.py`，并带有 `EVOLVE-BLOCK-START` 和 `EVOLVE-BLOCK-END`；
-- `evaluator.py`，并提供 `evaluate(program_path)`；
-- `config.yaml`、`config.yml` 或 `config_default.yaml`，并包含 `max_iterations` 和 `checkpoint_interval`。
-
-如果项目结构不同，skill 应该先检查现有文件，再决定适配、修复或询问用户，而不是强行套用默认结构。
-
-## 仓库结构
-
-- `skills/openevolve-experiment-workflow/SKILL.md`：goal-driven AI4Math-Evolving 交互协议。
-- `skills/openevolve-experiment-workflow/scripts/`：验证、dry run、运行摘要和会话状态的内部工具。
-- `skills/openevolve-experiment-workflow/references/`：项目格式和故障排查参考。
-- `examples/`：包内可运行示例，包含理解和复现实验所需的主要项目文件。
-
-## 本地检查
-
-这些脚本主要给 agent 使用，但也可以直接检查仓库：
-
-```bash
-python3 skills/openevolve-experiment-workflow/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json init
-python3 skills/openevolve-experiment-workflow/scripts/interactive_session.py --workspace /tmp/ai4math-evolving --json next
-python3 -m unittest discover -s tests -v
+请从 https://github.com/VeryMath/AI4Math-Evolving.git 安装
+openevolve-experiment-workflow Skill。
+读取 SKILL.md，安装包含 references 和 examples 的完整包，
+确认 $openevolve-experiment-workflow 可以被发现。
 ```

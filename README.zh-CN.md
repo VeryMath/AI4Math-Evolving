@@ -6,7 +6,7 @@
 
 [English](README.md) · [贡献者](CONTRIBUTORS.md) · [技能包](#技能包) · [安装](#安装) · [快速开始](#快速开始) · [安全边界](#安全边界)
 
-![version](https://img.shields.io/badge/version-0.1.0-blue)
+![version](https://img.shields.io/badge/version-0.2.0-blue)
 ![skills](https://img.shields.io/badge/skills-1-2ea44f)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -19,7 +19,7 @@
 
 ## 这个仓库是什么
 
-这个仓库是 AI4Math 演化式 agent workflow 的技能入口。目前重点是有边界的 OpenEvolve 实验会话：环境就绪检查、项目检查、短 probe、指标复盘和下一轮迭代建议。
+这个仓库是 AI4Math 演化式 agent workflow 的技能入口。目前重点是有边界的 OpenEvolve 实验会话：对算法、证明候选和反例逐轮修改、评估、数学核查，并记录失败反馈。
 
 根 README 负责说明地图；真正执行任务时，请进入对应的 `skills/` 子目录。
 
@@ -27,7 +27,7 @@
 
 | 包 | 适用任务 | 入口 |
 | --- | --- | --- |
-| [`openevolve-experiment-workflow`](skills/openevolve-experiment-workflow/) | 检查或创建 OpenEvolve 项目、验证运行配置、执行有边界 probe、总结指标并指导迭代改进。 | [`README`](skills/openevolve-experiment-workflow/README.md) · [`SKILL`](skills/openevolve-experiment-workflow/SKILL.md) |
+| [`openevolve-experiment-workflow`](skills/openevolve-experiment-workflow/) | 演化算法、证明候选和反例，逐轮评估修改，记录数学核查与失败反馈。 | [`README`](skills/openevolve-experiment-workflow/README.md) · [`SKILL`](skills/openevolve-experiment-workflow/SKILL.md) |
 
 ## 安装
 
@@ -78,20 +78,25 @@ skills/openevolve-experiment-workflow/SKILL.md
 
 ## 仓库结构
 
-```text
-AI4Math-Evolving/
-├── README.md
-├── README.zh-CN.md
-├── SKILL.md
-└── skills/
-    └── openevolve-experiment-workflow/
-```
+- `README.md` 与 `README.zh-CN.md`：仓库说明与安装入口。
+- `SKILL.md`：引导任务使用对应技能包。
+- `skills/openevolve-experiment-workflow/`：工作流程、示例与参考资料。
+- `tests/`：脚本行为、元信息、链接与数学验证。
 
 实验日志、checkpoint、provider 设置和生成输出应放在任务本地输出目录，不要放在公开根目录。
 
 ## 验证
 
-这个仓库没有根级构建步骤。修改技能包后，请检查 `SKILL.md`、README 链接、脚本和 references；如果使用 Codex 本地 skill validator，请对 `skills/openevolve-experiment-workflow/` 运行验证。
+从仓库根目录安装验证依赖并运行检查：
+
+```bash
+python -m pip install '.[test]'
+mkdir -p .verification/temporary
+TMPDIR="$PWD/.verification/temporary" python -m pytest -q
+python skills/openevolve-experiment-workflow/examples/mathematical_evolution.py --case all --rounds 10 --output .verification/mathematical-evolution.json
+```
+
+[真实模型案例](skills/openevolve-experiment-workflow/examples/model_candidates/README.md)使用 JSON 候选和固定评估器。已完成的 `ecnu-max` 运行见[验证记录](skills/openevolve-experiment-workflow/references/model-validation.md)。CI 无需服务密钥即可执行本地数学检查。
 
 ## 安全边界
 
